@@ -1,0 +1,72 @@
+group 'org.schicwp'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+    compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    compile("org.springframework.boot:spring-boot-starter-security")
+
+    // https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch
+    //compile group: 'org.elasticsearch', name: 'elasticsearch', version: '6.5.4'
+    // https://mvnrepository.com/artifact/org.elasticsearch.plugin/transport-netty4-client
+    //compile group: 'org.elasticsearch.plugin', name: 'transport-netty4-client', version: '6.5.4'
+
+
+
+    compile("org.springframework.security:spring-security-ldap")
+
+    compile("com.unboundid:unboundid-ldapsdk")
+
+    compile("org.springframework.ldap:spring-ldap-core")
+
+
+
+    // https://mvnrepository.com/artifact/org.apache.jackrabbit/oak-core
+    //compile group: 'org.apache.jackrabbit', name: 'oak-jcr', version: '1.7.6'
+
+    // https://mvnrepository.com/artifact/org.apache.jackrabbit/oak-mongomk
+    //compile group: 'org.apache.jackrabbit', name: 'oak-mongomk', version: '0.8'
+
+    // https://mvnrepository.com/artifact/org.apache.jackrabbit/oak-store-document
+    //compile group: 'org.apache.jackrabbit', name: 'oak-store-document', version: '1.7.6'
+
+    // https://mvnrepository.com/artifact/org.apache.jackrabbit/oak-mk
+    //compile group: 'org.apache.jackrabbit', name: 'oak-mk', version: '1.2.30'
+
+    //compile "org.mongodb:mongo-java-driver:3.4.3"
+
+
+    //compile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '2.1.1'
+    //compile group: 'cz.jirutka.spring', name: 'embedmongo-spring', version: '1.3.1'
+
+
+    //compile "info.magnolia:magnolia-ldap:1.10.1"
+
+
+
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

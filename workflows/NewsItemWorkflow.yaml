@@ -1,0 +1,21 @@
+name: SampleWorkflow
+states:
+  - name: Draft
+  - name: Published
+
+
+actions:
+
+  - name: SaveDraft
+    entryPoint: true
+    nextState: Draft
+
+  - name: Publish
+    entryPoint: true
+    nextState: Published
+    sourceStates:
+     - Draft
+     - Published
+    allowedRoles:
+     - Editor
+

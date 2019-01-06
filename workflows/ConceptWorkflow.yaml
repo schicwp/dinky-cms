@@ -1,0 +1,31 @@
+name: ConceptWorkflow
+states:
+  - name: Draft
+  - name: Published
+
+
+actions:
+
+  - name: SaveDraft
+    entryPoint: true
+    nextState: Draft
+    sourceStates:
+     - Draft
+     - Published
+
+  - name: Publish
+    entryPoint: true
+    nextState: Published
+    sourceStates:
+     - Draft
+     - Published
+    allowedRoles:
+     - Editor
+    hooks:
+      - name: AssignToGroup
+      - name: AssignToUser
+      - name: SetPermissions
+        owner: rw
+        group: rw
+        other: r
+

@@ -1,0 +1,9 @@
+name: NewsItem
+workflow: NewsItemWorkflow
+fields:
+  - name: title
+    type: String
+  - name: body
+    type: String
+  - name: embargoDate
+    type: Date

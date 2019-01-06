@@ -1,0 +1,21 @@
+name: Concept
+workflow: ConceptWorkflow
+fields:
+  - name: title
+    type: String
+
+  - name: code
+    type: String
+    regex: "[A-Za-z]+"
+    index: true
+
+  - name: description
+    type: String
+
+  - name: number
+    type: Int
+    required: true
+
+  - name: broader
+    type: Set
+    collectionType: Concept
