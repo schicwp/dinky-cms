@@ -103,7 +103,8 @@ OR
 _ActionHooks_ allow business actions to be attached to workflows.
  
  
-|| Name         || Description                          || Config Parameters || User Parameters || 
+|  Name         |  Description                          | Config Parameters  | User Parameters  | 
+| ---           | ---                                   | ---                | ---              |
 | AssignToGroup |  Assigns the group of the content     | group              | group            |
 | AssignToUser  |  Assigns the owner of the content     | user               | user             |
 | AddToSearch   |  Adds the content to the search index | owner
