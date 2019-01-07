@@ -1,4 +1,4 @@
-# TeenyCMS
+# TeenyCR
 
 Features:
  - User defined content types
