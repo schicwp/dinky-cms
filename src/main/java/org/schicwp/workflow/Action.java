@@ -1,9 +1,6 @@
 package org.schicwp.workflow;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by will.schick on 1/4/19.
@@ -28,7 +25,7 @@ public class Action {
     private Collection<String> sourceStates = new ArrayList<>();
     private Collection<String> allowedRoles = new ArrayList<>();
     private Collection<Map<String,String>> hooks = new ArrayList<>();
-    private Collection<ActionHook> actionHooks = new ArrayList<>();
+    private Map<String,ActionHook> actionHooks = new HashMap<>();
 
 
     public String getName() {
@@ -71,11 +68,11 @@ public class Action {
         this.allowedRoles = allowedRoles;
     }
 
-    public Collection<ActionHook> getActionHooks() {
+    public Map<String, ActionHook> getActionHooks() {
         return actionHooks;
     }
 
-    public void setActionHooks(Collection<ActionHook> actionHooks) {
+    public void setActionHooks(Map<String, ActionHook> actionHooks) {
         this.actionHooks = actionHooks;
     }
 

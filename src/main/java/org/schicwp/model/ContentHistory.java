@@ -1,12 +1,14 @@
 package org.schicwp.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Map;
 
 /**
  * Created by will.schick on 1/4/19.
  */
+@Document
 public class ContentHistory {
 
     @Id

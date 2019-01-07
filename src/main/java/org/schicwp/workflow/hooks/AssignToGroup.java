@@ -2,13 +2,16 @@ package org.schicwp.workflow.hooks;
 
 import org.schicwp.model.Content;
 import org.schicwp.workflow.ActionHook;
+import org.schicwp.workflow.ActionHookFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
  * Created by will.schick on 1/5/19.
  */
-public class AssignToGroup implements ActionHook {
+@Component
+public class AssignToGroup implements ActionHookFactory {
 
 
     @Override
@@ -16,12 +19,13 @@ public class AssignToGroup implements ActionHook {
         return "AssignToGroup";
     }
 
+
     @Override
-    public void execute(Content content, Map<String,Object> actionConfig) {
-
-        if (actionConfig.containsKey("group"))
-            content.setGroup((String)actionConfig.get("group"));
-
-
+    public ActionHook createActionHook(Map<String, String> config) {
+        return (content, actionConfig) -> {
+            if (actionConfig.containsKey("group"))
+                content.setGroup((String)actionConfig.get("group"));
+        };
     }
+
 }

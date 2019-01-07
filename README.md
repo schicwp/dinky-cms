@@ -1,7 +1,9 @@
-#TeenyCMS
+# TeenyCMS
 
 
-## Create Workflows
+## Basics
+
+### Create Workflows
 
 
 ```yaml
@@ -30,7 +32,7 @@ actions:
 
 ```
 
-## Create Content Types
+### Create Content Types
 
 ```yaml
 name: JellyBean
@@ -44,7 +46,7 @@ fields:
 
 ```
 
-## Create Content
+### Create Content
 
 ```
 POST /api/v1/content/JellyBean
@@ -61,7 +63,7 @@ POST /api/v1/content/JellyBean
 }
 ```
 
-## Get Content
+### Get Content
 
 Can now be found:
 
@@ -95,3 +97,20 @@ OR
     }
 },
 ```
+
+## Action Hooks
+
+_ActionHooks_ allow business actions to be attached to workflows.
+ 
+ 
+|| Name         || Description                          || Config Parameters || User Parameters || 
+| AssignToGroup |  Assigns the group of the content     | group              | group            |
+| AssignToUser  |  Assigns the owner of the content     | user               | user             |
+| AddToSearch   |  Adds the content to the search index | owner
+group
+other | owner
+group
+other |
+
+
+## Search

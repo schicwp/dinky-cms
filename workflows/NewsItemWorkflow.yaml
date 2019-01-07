@@ -1,4 +1,4 @@
-name: SampleWorkflow
+name: NewsItemWorkflow
 states:
   - name: Draft
   - name: Published

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -60,8 +61,13 @@ public class WorkflowExecutionService {
             content = new Content()
                     .merge(contentSubmission.getContent());
 
+            content.setId(UUID.randomUUID().toString());
             content.setOwner(authService.getCurrentUser().getUsername());
             content.setType(type);
+        }
+
+        if (contentType.getNameField() != null){
+            content.setName((String)content.getContent().get(contentType.getNameField()));
         }
 
         contentType.sanitize(content);
@@ -91,15 +97,15 @@ public class WorkflowExecutionService {
 
             content.setState(action.getNextState());
 
-            action.getActionHooks().forEach(actionHook -> {
-                actionHook.execute(content,
-                        contentSubmission
-                                .getWorkflow()
-                                .get(actionHook.getName())
-                );
-            });
 
-            searchRepository.save(content);
+
+            action.getActionHooks().forEach((name,hook) -> {
+                hook.execute(content,
+                                contentSubmission
+                                        .getWorkflow()
+                                        .get(name)
+                        );
+            });
 
             return contentRepository.save(content);
 

@@ -10,20 +10,9 @@ import java.util.Map;
 /**
  * Created by will.schick on 1/5/19.
  */
-@Service
-public class ActionHookFactory {
+public interface ActionHookFactory {
 
+    String getName();
 
-    public ActionHook createActionHook(Map<String,String> config){
-        switch (config.get("name")){
-            case "AssignToGroup":
-                return new AssignToGroup();
-            case "AssignToUser":
-                return new AssignToUser();
-            case "SetPermissions":
-                return new SetPermissions(config);
-        }
-
-        throw new RuntimeException();
-    }
+    ActionHook createActionHook(Map<String,String> config);
 }

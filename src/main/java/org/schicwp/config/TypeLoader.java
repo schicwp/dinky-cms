@@ -68,7 +68,8 @@ public class TypeLoader {
 
                 ContentType contentType = new ContentType(
                         name, fieldConfigs.stream().map(fieldTypeFactory::createField).collect(Collectors.toList()),
-                        workflowService.getWorkflow(workflow)
+                        workflowService.getWorkflow(workflow),
+                        (String)obj.get("nameField")
                 );
 
                 contentType.getFields().forEach(field -> {

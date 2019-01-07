@@ -9,7 +9,5 @@ import java.util.Map;
  */
 public interface ActionHook {
 
-    String getName();
-
     public void execute(Content content, Map<String,Object> actionConfig);
 }

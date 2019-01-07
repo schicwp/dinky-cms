@@ -26,7 +26,7 @@ public class WorkflowService {
     Map<String,Workflow> workflows = null;
 
     @Autowired
-    ActionHookFactory actionHookFactory;
+    ActionHookFactoryService actionHookFactoryService;
 
     public synchronized Workflow getWorkflow(String name){
         if (workflows == null)
@@ -53,8 +53,12 @@ public class WorkflowService {
 
                 workflow.getActions().forEach(action -> {
                     action.getHooks().forEach( hookConfig->{
-                        action.getActionHooks().add(
-                                actionHookFactory.createActionHook(hookConfig)
+
+                        String name = hookConfig.get("name");
+
+                        action.getActionHooks().put(
+                                hookConfig.get("name"),
+                                actionHookFactoryService.getActionHook(name).createActionHook(hookConfig)
                         );
                     });
                 });

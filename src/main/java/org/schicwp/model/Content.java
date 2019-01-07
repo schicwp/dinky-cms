@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by will.schick on 1/4/19.
  */
-@Document
+@org.springframework.data.mongodb.core.mapping.Document
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "content", type = "contentType")
 public class Content {
 
@@ -35,6 +35,11 @@ public class Content {
     String owner;
     @Indexed
     String group;
+    @Indexed
+    String name;
+    @Indexed
+    Integer searchVersion = null;
+
 
     @Indexed
     Permission ownerPermissions = Permission.RW;
@@ -42,6 +47,7 @@ public class Content {
     Permission groupPermissions = Permission.R;
     @Indexed
     Permission otherPermissions = Permission.NONE;
+
 
 
 
@@ -126,6 +132,14 @@ public class Content {
         this.type = type;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setGroup(String group) {
         this.group = group;
     }
@@ -156,5 +170,24 @@ public class Content {
 
     public void setOwnerPermissions(Permission ownerPermissions) {
         this.ownerPermissions = ownerPermissions;
+    }
+
+    public Integer getSearchVersion() {
+        return searchVersion;
+    }
+
+    public void setSearchVersion(Integer searchVersion) {
+        this.searchVersion = searchVersion;
+    }
+
+    @Override
+    public String toString() {
+        return "Content{" +
+                "id='" + id + '\'' +
+                ", version=" + version +
+                ", state='" + state + '\'' +
+                ", type='" + type + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

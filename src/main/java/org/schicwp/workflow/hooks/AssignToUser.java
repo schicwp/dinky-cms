@@ -2,13 +2,16 @@ package org.schicwp.workflow.hooks;
 
 import org.schicwp.model.Content;
 import org.schicwp.workflow.ActionHook;
+import org.schicwp.workflow.ActionHookFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
  * Created by will.schick on 1/5/19.
  */
-public class AssignToUser implements ActionHook {
+@Component
+public class AssignToUser implements ActionHookFactory {
 
 
     @Override
@@ -17,11 +20,11 @@ public class AssignToUser implements ActionHook {
     }
 
     @Override
-    public void execute(Content content, Map<String,Object> actionConfig) {
-
-        if (actionConfig.containsKey("user"))
-            content.setOwner((String)actionConfig.get("user"));
-
-
+    public ActionHook createActionHook(Map<String, String> config) {
+        return (content, actionConfig) -> {
+            if (actionConfig.containsKey("user"))
+                content.setOwner((String)actionConfig.get("user"));
+        };
     }
+
 }

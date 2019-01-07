@@ -15,11 +15,13 @@ public class ContentType {
     private final String name;
     private final Collection<Field> fields;
     private final Workflow workflow;
+    private final String nameField;
 
-    public ContentType(String name, Collection<Field> fields, Workflow workflow) {
+    public ContentType(String name, Collection<Field> fields, Workflow workflow, String nameField) {
         this.name = name;
         this.fields = fields;
         this.workflow = workflow;
+        this.nameField = nameField;
 
         if (this.workflow == null || this.fields == null)
             throw new RuntimeException();
@@ -63,5 +65,9 @@ public class ContentType {
 
     public Collection<Field> getFields() {
         return fields;
+    }
+
+    public String getNameField() {
+        return nameField;
     }
 }
