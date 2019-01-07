@@ -1,5 +1,7 @@
 # TeenyCR
 
+This is a small, web based content repository service.
+
 Features:
  - User defined content types
  - User defined workflows
@@ -12,7 +14,12 @@ NOT Features:
  - This app is not a website platform - it does not have any sitebuilder features
  - The app is configuration and api driven, there is no management UI
 
-
+Tech Stack:
+ - MongoDB
+ - Elasticsearch
+ - Spring Boot
+ 
+ 
 ## Basics Setup
 
 ### Create Workflows
