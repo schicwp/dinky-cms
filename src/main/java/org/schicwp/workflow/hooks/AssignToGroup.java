@@ -1,15 +1,11 @@
 package org.schicwp.workflow.hooks;
 
-import org.schicwp.model.Content;
 import org.schicwp.workflow.ActionHook;
 import org.schicwp.workflow.ActionHookFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-/**
- * Created by will.schick on 1/5/19.
- */
 @Component
 public class AssignToGroup implements ActionHookFactory {
 

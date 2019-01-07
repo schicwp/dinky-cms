@@ -54,7 +54,7 @@ public class TypeLoader {
 
             try {
 
-                logger.info("Loading: " + file);
+                logger.fine("Loading: " + file);
                 Map<String, Object> obj = new Yaml().load(new FileInputStream(file));
 
 
@@ -64,8 +64,6 @@ public class TypeLoader {
                 String workflow = (String)obj.get("workflow");
                 String name = (String)obj.get("name");
 
-                logger.info(workflow);
-
                 ContentType contentType = new ContentType(
                         name, fieldConfigs.stream().map(fieldTypeFactory::createField).collect(Collectors.toList()),
                         workflowService.getWorkflow(workflow),
@@ -74,7 +72,7 @@ public class TypeLoader {
 
                 contentType.getFields().forEach(field -> {
                     if (field.isIndexed()){
-                        logger.info("Creating index 'content." + field.getName() + "'");
+                        logger.fine("Creating index 'content." + field.getName() + "'");
                         mongoOperations.indexOps(Content.class).
                                 ensureIndex(new Index().on("content." + field.getName(), Sort.Direction.ASC));
                     }
@@ -91,7 +89,7 @@ public class TypeLoader {
         });
 
 
-        logger.info("Types: " + contentTypes);
+        logger.fine("Types: " + contentTypes);
         contentTypeService.setContentTypes(contentTypes);
 
 

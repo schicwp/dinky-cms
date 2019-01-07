@@ -15,7 +15,7 @@ public class Action {
     sourceStates:
      - Draft
      - Published
-    allowedRoles:
+    allowedGroups:
      - Editor
      */
 
@@ -23,7 +23,7 @@ public class Action {
     private boolean entryPoint = false;
     private String nextState;
     private Collection<String> sourceStates = new ArrayList<>();
-    private Collection<String> allowedRoles = new ArrayList<>();
+    private Collection<String> allowedGroups = new ArrayList<>();
     private Collection<Map<String,String>> hooks = new ArrayList<>();
     private Map<String,ActionHook> actionHooks = new HashMap<>();
 
@@ -60,12 +60,12 @@ public class Action {
         this.sourceStates = sourceStates;
     }
 
-    public Collection<String> getAllowedRoles() {
-        return allowedRoles;
+    public Collection<String> getAllowedGroups() {
+        return allowedGroups;
     }
 
-    public void setAllowedRoles(Collection<String> allowedRoles) {
-        this.allowedRoles = allowedRoles;
+    public void setAllowedGroups(Collection<String> allowedGroups) {
+        this.allowedGroups = allowedGroups;
     }
 
     public Map<String, ActionHook> getActionHooks() {

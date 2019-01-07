@@ -1,10 +1,24 @@
 # TeenyCMS
 
+Features:
+ - User defined content types
+ - User defined workflows
+ - Content and workflow permissioning
+ - Robust content indexing and searching
+ - Content concurrency control using optimistic locking
+ - Content version history
+ 
+NOT Features:
+ - This app is not a website platform - it does not have any sitebuilder features
+ - The app is configuration and api driven, there is no management UI
 
-## Basics
+## Basics Setup
 
 ### Create Workflows
 
+Workflows are configured by adding a yaml file to the _workflows_ configuration directory. 
+
+They contain a list of _states_ and _actions_ that transition the content from state to state.
 
 ```yaml
 name: JellyBeanWorkflow
@@ -33,6 +47,11 @@ actions:
 ```
 
 ### Create Content Types
+
+Content Types are configured by adding a yaml file to the _content types_ configuration directory. 
+
+These provide the structure of content, along with validation constraints, and say which workflow the content
+will use.
 
 ```yaml
 name: JellyBean
@@ -65,15 +84,15 @@ POST /api/v1/content/JellyBean
 
 ### Get Content
 
-Can now be found:
+Can now be found by type listing:
 
     GET /api/v1/content/type/JellyBean
     
-OR
+OR by type and state listing:
 
     GET /api/v1/content/type/JellyBean/InBag
     
-OR
+OR id:
 
     GET /api/v1/content/item/{id}
     
@@ -101,13 +120,163 @@ OR
 ## Action Hooks
 
 _ActionHooks_ allow business actions to be attached to workflows.
- 
- 
-  Name         |  Description                          | Config Parameters  | User Parameters  
- ---           | ---                                   | ---                | ---              
- AssignToGroup |  Assigns the group of the content     | group              | group            
- AssignToUser  |  Assigns the owner of the content     | user               | user             
- AddToSearch   |  Adds the content to the search index | owner <br/> group <br/> other | owner <br/> group <br/> other 
 
+These are configured in the workflow yaml:
+
+```yaml
+actions:
+
+  - name: PutInBag
+    entryPoint: true
+    nextState: InBag
+    #use hooks to let friends have beans as well
+    hooks:
+     - name: AssignToGroup
+       group: friends
+     - name: SetPermissions
+       group: rw
+```
+ 
+Standard hooks below:
+ 
+  Name              |  Description                          | Config Parameters              | User Parameters  
+ ---                | ---                                   | ---                            | ---              
+ AssignToGroup      |  Assigns the group of the content     | group                          | group            
+ AssignToUser       |  Assigns the owner of the content     | user                           | user             
+ SetPermissions     |  Sets the permissions of the content  | owner <br/> group <br/> other  | owner <br/> group <br/> other 
+ AddToSearch        |  Adds the content to the search       |                                | 
+ RemoveFromSearch   |  Removes the content from the search  |                                | 
+ 
+### Adding Action Hooks for Custom Business
+
+To Implement custom behavior, additional hooks can be added. 
+
+They must be registered Spring Beans, and they will automatically be made available. 
+
+```java
+package my.stuff;
+
+import org.schicwp.workflow.ActionHook;
+import org.schicwp.workflow.ActionHookFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+public class MyHookFactory implements ActionHookFactory {
+
+    // name will be used in workflow yaml
+    @Override
+    public String getName() {
+        return "MyHook";
+    }
+
+    //"config" are settings from the workflow yaml
+    @Override
+    public ActionHook createActionHook(Map<String, String> config) {
+        
+        //"actionConfig" is provided by submission
+        return (content, actionConfig) -> {
+            //TODO - do stuff with content
+        };
+    }
+
+}
+```
+
+### Changing Content Values in ActionHooks
+
+ActionHooks may change content values, if they wish. This opens up the potential of side effects between different
+hooks that may want to work on the same values. 
 
 ## Search
+
+Search is provided by [elasticsearch]().
+
+This can be done via the _search_ endpoint, using the **q** parameter:
+
+    GET /api/v1/search?q=content.color:red
+    
+    GET /api/v1/search?q=content.color:red AND content.flavor:cinnamon
+    
+This uses elasticsearch [query string](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html)
+syntax.
+
+
+### Adding to the search index
+
+The _AddToSearch_ action hook can be used to add items to the search index. 
+
+## Optimistic Locking 
+
+Users can _optionally_ use optimistic locking to prevent versioning conflicts. 
+
+This can be useful if there are any non-idempotent side effects (in an export ActionHook, for example).
+
+To use the locking, the user should provide a _version_ property on submission. This will be compared to 
+the latest stored version, and rejected if they do not match. The _version_ property is incremented on 
+every modification. 
+
+```json
+{
+
+	"action":"PutInBag",
+	"version":3,
+	"content":{
+		"flavor":"cinnamon",
+		"color": "red"	
+	}
+}
+```
+
+If the version is not provided, the locking mechanism will be ignored.
+
+## Version History
+
+Every modification to a piece of content is saved. 
+
+These versions can be retrieved by using the endpoint:
+
+    GET /api/v1/content/item/{id}/history
+    
+This will give a paginated list of all versions. The permissions for the 
+current version will determine access to the history. 
+
+## Permissions
+
+Permissions control who can access or modify a document, or who can execute a certain workflow action.
+
+### Content Permissions
+
+Each content resource has an _owner_ and a _group_ field, and permissions for the _owner_, _group_ and 
+_other_ (everybody else) in the fields _ownerPermissions_, _groupPermissions_ and _otherPermissions_.
+
+The _owner_ field represents a user, and the _group_ field represents a group or role. 
+
+The permissions fields may have the following values:
+
+ - RW - when this is granted, the item may be read and writen to
+ - R - the item may be read
+ - W - the item may be written to (but not read)(!)
+ - NONE - the item cannot be read or written to
+ 
+ 
+### Workflow Permissions
+
+A workflow action can have a set of _allowedGroups_. These are groups that can execute that action.
+
+In the following example, only members of either the _Friends_ or _Family_ groups can execute the _PutInBag_ 
+action:
+
+```yaml
+actions:
+
+  - name: PutInBag
+    entryPoint: true
+    nextState: InBag
+    allowedGroups:
+     - Friends
+     - Family
+```
+ 
+

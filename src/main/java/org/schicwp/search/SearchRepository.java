@@ -1,6 +1,7 @@
 package org.schicwp.search;
 
 import org.schicwp.model.Content;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

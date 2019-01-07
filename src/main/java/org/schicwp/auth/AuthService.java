@@ -17,9 +17,6 @@ public class AuthService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
-
-
-
             user.setUsername(
                     authentication.getName()
             );
@@ -27,8 +24,6 @@ public class AuthService {
             authentication.getAuthorities().forEach(a -> {
                 user.getGroups().add(a.getAuthority());
             });
-
-            System.out.println(user.getGroups());
         }
 
         return user;

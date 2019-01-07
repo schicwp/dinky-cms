@@ -6,6 +6,7 @@ import org.schicwp.workflow.ActionHook;
 import org.schicwp.workflow.ActionHookFactory;
 import org.schicwp.workflow.ActionHookFactoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -36,6 +37,7 @@ public class AddToSearch implements ActionHookFactory {
 
             content.setSearchVersion(content.getVersion());
             searchRepository.save(content);
+
 
         };
     }

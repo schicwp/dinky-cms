@@ -16,6 +16,6 @@ actions:
     sourceStates:
      - Draft
      - Published
-    allowedRoles:
+    allowedGroups:
      - Editor
 

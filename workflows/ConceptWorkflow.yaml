@@ -20,7 +20,7 @@ actions:
     sourceStates:
      - Draft
      - Published
-    allowedRoles:
+    allowedGroups:
      - Editor
     hooks:
       - name: AssignToGroup

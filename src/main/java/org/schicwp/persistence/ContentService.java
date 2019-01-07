@@ -36,11 +36,22 @@ public class ContentService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    QueryTotalCache queryTotalCache;
+
     public Content save(Content content) {
+
+        queryTotalCache.invalidate();
 
         contentHistoryRepository.save(new ContentHistory(content));
 
         return contentRepository.save(content);
+    }
+
+    public Page<Content> getHistory(String id, Pageable pageable){
+        return contentHistoryRepository
+                .findAllByContentId(id,pageable)
+                .map(ContentHistory::getContent);
     }
 
 
@@ -48,10 +59,7 @@ public class ContentService {
         return contentRepository.findById(s);
     }
 
-    public Page<Content> find(Query query) {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
+    public Page<Content> find(Query query,Pageable pageable) {
 
         User user = authService.getCurrentUser();
 
@@ -65,12 +73,13 @@ public class ContentService {
 
 
         Query finalQuery = query.addCriteria(userCrit).with(pageable);
+
         List<Content> result =  mongoTemplate.find(finalQuery,Content.class);
 
         return  PageableExecutionUtils.getPage(
                 result,
                 pageable,
-                ()->4// () -> mongoTemplate.count(finalQuery, Content.class)
+                () -> queryTotalCache.getCountForQuery(finalQuery)
         );
     }
 }
