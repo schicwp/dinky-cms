@@ -1,5 +1,7 @@
 package org.schicwp.model.type;
 
+import org.schicwp.model.Content;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,13 +36,17 @@ public class Field {
         return name;
     }
 
-    public boolean validate(Object object){
+    public boolean validateSubmission(Object object){
 
 
-        return fieldType.validate(object,properites, new ArrayList<>());
+        return fieldType.validateSubmission(object,properites, new ArrayList<>());
     }
 
     public boolean isIndexed() {
         return indexed;
+    }
+
+    public Object convertSubmission(Object object, Map<String, String> properites, Content content){
+        return fieldType.convertSubmission(object,properites,content);
     }
 }

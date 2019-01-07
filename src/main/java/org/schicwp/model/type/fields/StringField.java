@@ -1,5 +1,6 @@
 package org.schicwp.model.type.fields;
 
+import org.schicwp.model.Content;
 import org.schicwp.model.type.FieldType;
 
 import java.util.Collection;
@@ -17,7 +18,7 @@ public class StringField implements FieldType{
     }
 
     @Override
-    public boolean validate(Object object, Map<String, String> properties, Collection<String> errors) {
+    public boolean validateSubmission(Object object, Map<String, String> properties, Collection<String> errors) {
 
         if (!(object instanceof String)){
             errors.add("Wrong type, expected String");
@@ -33,5 +34,10 @@ public class StringField implements FieldType{
         }
 
         return true;
+    }
+
+    @Override
+    public Object convertSubmission(Object input, Map<String, String> properties, Content content) {
+        return (String)input;
     }
 }

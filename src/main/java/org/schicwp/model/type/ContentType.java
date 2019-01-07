@@ -40,7 +40,7 @@ public class ContentType {
                 ok = false;
 
             if (content.getContent().containsKey(field.getName())){
-                ok &= field.validate(content.getContent().get(field.getName()));
+                ok &= field.validateSubmission(content.getContent().get(field.getName()));
             }
         }
 
@@ -55,6 +55,20 @@ public class ContentType {
             if (this.fields.stream().noneMatch(f->f.getName().equals(name)))
                 content.getContent().remove(name);
         });
+
+        return content;
+    }
+
+    public Content convert(Content content){
+
+        for (Field field: fields){
+            if (content.getContent().containsKey(field.getName())) {
+                content.getContent().put(
+                        field.getName(),
+                        field.convertSubmission(content.getContent().get(field.getName()), null, content)
+                );
+            }
+        }
 
         return content;
     }

@@ -12,6 +12,7 @@ NOT Features:
  - This app is not a website platform - it does not have any sitebuilder features
  - The app is configuration and api driven, there is no management UI
 
+
 ## Basics Setup
 
 ### Create Workflows
@@ -278,5 +279,17 @@ actions:
      - Friends
      - Family
 ```
+
+### Binary Data (Images, Attachments)
+
+Binary data can be handled by using a _Binary_ field type on a ContentType.
+
+This can then be uploaded via a Multipart submission (TODO, details)
+
+
+    GET /api/v1/assets/{assetId}
+    
+The binary asset will have the same permissions as the object that owns it. 
+
  
 
