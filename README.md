@@ -114,8 +114,14 @@ OR id:
     "state": "InBag",
     "type": "JellyBean",
     "owner": "bob",
-    "group": null,
-    "ownerPermissions": "RW",
+    "permissions": {
+    	"owner":{
+		"read":true,
+		"write": true
+	}
+	"group":{
+	}
+    }
     "groupPermissions": "R",
     "otherPermissions": "NONE",
     "content": {
