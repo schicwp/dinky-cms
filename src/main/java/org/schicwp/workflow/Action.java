@@ -24,7 +24,7 @@ public class Action {
     private String nextState;
     private Collection<String> sourceStates = new ArrayList<>();
     private Collection<String> allowedGroups = new ArrayList<>();
-    private Collection<Map<String,String>> hooks = new ArrayList<>();
+    private Collection<Map<String,Object>> hooks = new ArrayList<>();
     private Map<String,ActionHook> actionHooks = new HashMap<>();
 
 
@@ -76,11 +76,11 @@ public class Action {
         this.actionHooks = actionHooks;
     }
 
-    public Collection<Map<String, String>> getHooks() {
+    public Collection<Map<String, Object>> getHooks() {
         return hooks;
     }
 
-    public void setHooks(Collection<Map<String, String>> hooks) {
+    public void setHooks(Collection<Map<String, Object>> hooks) {
         this.hooks = hooks;
     }
 }

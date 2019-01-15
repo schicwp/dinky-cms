@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by will.schick on 1/5/19.
@@ -63,12 +64,25 @@ public class ContentService {
 
         User user = authService.getCurrentUser();
 
+
+
+        List<Criteria> criteria = user.getGroups().stream().map( s->
+                        Criteria.where("permissions.group." + s + ".read").is(true)
+        ).collect(Collectors.toList());
+
+        criteria.add(
+                Criteria.where("owner").is(user.getUsername()).and("permissions.owner.read").is(true)
+        );
+
+        criteria.add(
+                Criteria.where("permissions.other.read").is(true)
+        );
+
+
+
         Criteria userCrit =new Criteria()
                 .orOperator(
-                        Criteria.where("group").in(user.getGroups())
-                                .and("groupPermissions").in("R","RW"),
-                        Criteria.where("owner").is(user.getUsername())
-                                .and("ownerPermissions").in("R","RW")
+                        criteria.toArray(new Criteria[0])
                 );
 
 

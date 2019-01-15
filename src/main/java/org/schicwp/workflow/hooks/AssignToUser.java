@@ -20,7 +20,7 @@ public class AssignToUser implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, String> config) {
+    public ActionHook createActionHook(Map<String, Object> config) {
         return (content, actionConfig) -> {
             if (actionConfig.containsKey("user"))
                 content.setOwner((String)actionConfig.get("user"));

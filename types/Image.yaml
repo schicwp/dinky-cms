@@ -1,0 +1,5 @@
+name: Image
+workflow: ImageWorkflow
+fields:
+  - name: file
+    type: binary

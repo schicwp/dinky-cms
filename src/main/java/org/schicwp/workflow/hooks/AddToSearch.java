@@ -30,7 +30,7 @@ public class AddToSearch implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, String> config) {
+    public ActionHook createActionHook(Map<String, Object> config) {
         return (content, actionConfig) -> {
 
             logger.info(String.format("Adding [%s] to search index.", content));

@@ -74,6 +74,8 @@ public class Main {
             int i = 1;
             {
 
+
+
                 ContentSubmission contentSubmission = new ContentSubmission();
                 contentSubmission.setAction("Publish");
                 contentSubmission.getWorkflow().put("AssignToGroup", Collections.singletonMap("group", "SysAdmins"));
@@ -84,7 +86,14 @@ public class Main {
                 contentSubmission.getContent().put("number", i);
                 contentSubmission.getContent().put("description", "ASDASD" + System.currentTimeMillis());
 
+                long start = System.currentTimeMillis();
+
                 contentResource.postContent("Concept", contentSubmission);
+
+                long stop = System.currentTimeMillis();
+
+                if (i%1000 == 0)
+                    System.out.println((stop-start));
             }
 
 

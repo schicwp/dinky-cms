@@ -14,13 +14,13 @@ public class Field {
 
     private final boolean required;
 
-    private final Map<String,String> properites;
+    private final Map<String,Object> properites;
 
     private final String name;
 
     private final boolean indexed;
 
-    public Field(FieldType fieldType, boolean required, Map<String, String> properites, String name, boolean indexed) {
+    public Field(FieldType fieldType, boolean required, Map<String, Object> properites, String name, boolean indexed) {
         this.fieldType = fieldType;
         this.required = required;
         this.properites = properites;
@@ -46,7 +46,7 @@ public class Field {
         return indexed;
     }
 
-    public Object convertSubmission(Object object, Map<String, String> properites, Content content){
+    public Object convertSubmission(Object object, Map<String, Object> properites, Content content){
         return fieldType.convertSubmission(object,properites,content);
     }
 }

@@ -1,5 +1,6 @@
 package org.schicwp.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.schicwp.model.Content;
 import org.schicwp.persistence.ContentService;
 import org.schicwp.workflow.WorkflowExecutionService;
@@ -11,7 +12,10 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -35,6 +39,45 @@ public class ContentResource {
     public Content postContent(
             @PathVariable("type") String type,
             @RequestBody ContentSubmission contentSubmission){
+        return workflowExecutionService.executeAction(Optional.empty(), contentSubmission, type);
+    }
+
+    @PostMapping(value = "{type}", consumes = "multipart/form-data")
+    public Content postContentMultipart(
+            @PathVariable("type") String type,
+            MultipartHttpServletRequest request,
+            @RequestParam("content") String content
+            ) throws IOException{
+
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                ContentSubmission contentSubmission = objectMapper.readValue(content,ContentSubmission.class);
+
+
+
+                System.out.println(content);
+
+                request.getFileNames().forEachRemaining((f)->{
+
+                    for (String k: contentSubmission.getContent().keySet()){
+
+                        if (f.equals(contentSubmission.getContent().get(k)))
+                            contentSubmission.getContent().put(k,request.getFile(f));
+
+                    }
+
+                    MultipartFile multipartFile = request.getFile(f);
+                    System.out.println(multipartFile.getContentType());
+                    System.out.println(multipartFile.getName());
+                    System.out.println(multipartFile.getOriginalFilename());
+
+                    System.out.println(f);
+
+                });
+        System.out.println("In Controller: " + request);
+
+        //files.keySet().forEach(f -> System.out.println(f));
+
         return workflowExecutionService.executeAction(Optional.empty(), contentSubmission, type);
     }
 

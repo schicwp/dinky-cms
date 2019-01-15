@@ -1,11 +1,16 @@
 package org.schicwp.workflow.hooks;
 
 import org.schicwp.model.Content;
-import org.schicwp.model.type.Permission;
+import org.schicwp.model.Permission;
 import org.schicwp.workflow.ActionHook;
 import org.schicwp.workflow.ActionHookFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,7 +19,7 @@ import java.util.Map;
 @Component
 public class SetPermissions implements ActionHookFactory {
 
-    
+
 
     @Override
     public String getName() {
@@ -22,33 +27,55 @@ public class SetPermissions implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, String> config) {
-        Permission _owner = Permission.fromString(config.get("owner"));;
-        Permission _group = Permission.fromString(config.get("group"));
-        Permission _other = Permission.fromString(config.get("group"));
+    public ActionHook createActionHook(Map<String, Object> config) {
+
+
+        Permission owner = fromObject(config.get("owner"));
+
+        Map<String,Permission> group = fromMap(  config.get("group"));
 
         return (content, actionConfig) -> {
-            Permission owner = _owner;
-            Permission group = _group;
-            Permission other = _other;
 
-            if (actionConfig != null) {
+            Permission _owner = fromObject(config.get("owner"));
 
-                if (actionConfig.containsKey("owner"))
-                    owner = Permission.fromString(actionConfig.get("owner").toString());
-                if (actionConfig.containsKey("group"))
-                    group = Permission.fromString(actionConfig.get("group").toString());
-                if (actionConfig.containsKey("other"))
-                    other = Permission.fromString(actionConfig.get("other").toString());
-            }
+            Map<String,Permission> _group = fromMap(  config.get("group"));
 
-            if (owner != null)
-                content.setOwnerPermissions(owner);
-            if (group != null)
-                content.setGroupPermissions(group);
-            if (other != null)
-                content.setOtherPermissions(other);
+            if (_owner != null)
+                content.getPermissions().setOwner(_owner);
+            else if (owner != null)
+                content.getPermissions().setOwner(owner);
+
+            group.forEach((s, permission) -> content.getPermissions().getGroup().put(s,permission));
+            _group.forEach((s, permission) -> content.getPermissions().getGroup().put(s,permission));
+
+
+
+
         };
+    }
+
+    private Map<String, Permission> fromMap( Object o) {
+        Map<String,Object> groupConfig = (Map<String, Object>) o;
+
+        Map<String,Permission> group = new HashMap<>();
+
+        if (group != null){
+            groupConfig.forEach( (k, v)-> group.put(k,fromObject(v)));
+        }
+
+        return group;
+
+
+    }
+
+    Permission fromObject(Object o){
+
+        if (o == null)
+            return null;
+
+        Map<String, Boolean> map = (Map)o;
+
+        return new Permission(map.get("read"),map.get("write"));
     }
 
 

@@ -29,7 +29,7 @@ public class RemoveFromSearch implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, String> config) {
+    public ActionHook createActionHook(Map<String, Object> config) {
         return (content, actionConfig) -> {
             logger.info(String.format("Removing [%s] from search index.", content));
 

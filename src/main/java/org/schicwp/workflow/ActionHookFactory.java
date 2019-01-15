@@ -1,10 +1,5 @@
 package org.schicwp.workflow;
 
-import org.schicwp.workflow.hooks.AssignToGroup;
-import org.schicwp.workflow.hooks.AssignToUser;
-import org.schicwp.workflow.hooks.SetPermissions;
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
 
 /**
@@ -14,5 +9,5 @@ public interface ActionHookFactory {
 
     String getName();
 
-    ActionHook createActionHook(Map<String,String> config);
+    ActionHook createActionHook(Map<String,Object> config);
 }

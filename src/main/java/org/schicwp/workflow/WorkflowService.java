@@ -54,10 +54,10 @@ public class WorkflowService {
                 workflow.getActions().forEach(action -> {
                     action.getHooks().forEach( hookConfig->{
 
-                        String name = hookConfig.get("name");
+                        String name = (String)hookConfig.get("name");
 
                         action.getActionHooks().put(
-                                hookConfig.get("name"),
+                                name,
                                 actionHookFactoryService.getActionHook(name).createActionHook(hookConfig)
                         );
                     });

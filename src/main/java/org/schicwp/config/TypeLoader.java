@@ -3,7 +3,7 @@ package org.schicwp.config;
 import org.schicwp.model.Content;
 import org.schicwp.model.type.ContentType;
 import org.schicwp.model.type.ContentTypeService;
-import org.schicwp.model.type.FieldTypeFactory;
+import org.schicwp.model.type.FieldFactory;
 import org.schicwp.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -32,7 +32,7 @@ public class TypeLoader {
     ContentTypeService contentTypeService;
 
     @Autowired
-    FieldTypeFactory fieldTypeFactory;
+    FieldFactory fieldFactory;
 
     @Autowired
     WorkflowService workflowService;
@@ -65,7 +65,7 @@ public class TypeLoader {
                 String name = (String)obj.get("name");
 
                 ContentType contentType = new ContentType(
-                        name, fieldConfigs.stream().map(fieldTypeFactory::createField).collect(Collectors.toList()),
+                        name, fieldConfigs.stream().map(fieldFactory::createField).collect(Collectors.toList()),
                         workflowService.getWorkflow(workflow),
                         (String)obj.get("nameField")
                 );

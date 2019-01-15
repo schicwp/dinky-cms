@@ -1,9 +1,5 @@
 package org.schicwp.model;
 
-//import org.springframework.data.annotation.Id;
-//import org.springframework.data.mongodb.core.index.Indexed;
-
-import org.schicwp.model.type.Permission;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,19 +30,11 @@ public class Content {
     @Indexed
     String owner;
     @Indexed
-    String group;
-    @Indexed
     String name;
     @Indexed
     Integer searchVersion = null;
 
-
-    @Indexed
-    Permission ownerPermissions = Permission.RW;
-    @Indexed
-    Permission groupPermissions = Permission.R;
-    @Indexed
-    Permission otherPermissions = Permission.NONE;
+    ContentPermissions permissions = new ContentPermissions();
 
 
 
@@ -100,9 +88,6 @@ public class Content {
         return created;
     }
 
-    public String getGroup() {
-        return group;
-    }
 
     public String getOwner() {
         return owner;
@@ -140,36 +125,8 @@ public class Content {
         this.name = name;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public Permission getGroupPermissions() {
-        return groupPermissions;
-    }
-
-    public Permission getOtherPermissions() {
-        return otherPermissions;
-    }
-
-    public Permission getOwnerPermissions() {
-        return ownerPermissions;
-    }
-
-    public void setGroupPermissions(Permission groupPermissions) {
-        this.groupPermissions = groupPermissions;
-    }
-
-    public void setOtherPermissions(Permission otherPermissions) {
-        this.otherPermissions = otherPermissions;
-    }
-
-    public void setOwnerPermissions(Permission ownerPermissions) {
-        this.ownerPermissions = ownerPermissions;
     }
 
     public Integer getSearchVersion() {
@@ -178,6 +135,14 @@ public class Content {
 
     public void setSearchVersion(Integer searchVersion) {
         this.searchVersion = searchVersion;
+    }
+
+    public ContentPermissions getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(ContentPermissions permissions) {
+        this.permissions = permissions;
     }
 
     @Override

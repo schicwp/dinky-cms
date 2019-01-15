@@ -1,0 +1,13 @@
+name: ImageWorkflow
+states:
+  - name: Published
+
+
+actions:
+  - name: Publish
+    entryPoint: true
+    nextState: Published
+
+
+
+

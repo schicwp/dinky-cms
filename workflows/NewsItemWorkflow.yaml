@@ -18,4 +18,13 @@ actions:
      - Published
     allowedGroups:
      - Editor
+    hooks:
+    - name: AddToSearch
+    - name: AssignToUser
+      user: bob
+    - name: SetPermissions
+      group:
+        Editors:
+            read: true
+            write: false
 

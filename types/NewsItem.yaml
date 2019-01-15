@@ -3,7 +3,26 @@ workflow: NewsItemWorkflow
 fields:
   - name: title
     type: String
+
   - name: body
     type: String
+
   - name: embargoDate
     type: Date
+
+
+  - name: ref
+    type: ObjectRef
+    referencedType: Concept
+
+  - name: subjects
+    type: Collection
+    collectionType:
+        type: ObjectRef
+        referencedType: Concept
+
+  - name: genres
+    type: Collection
+    collectionType:
+        type: ObjectRef
+        referencedType: Concept
