@@ -22,6 +22,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.thymeleaf.templateresolver.FileTemplateResolver;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -45,6 +46,15 @@ public class Main {
 
     @Autowired
     ContentResource contentResource;
+
+    @Bean
+    FileTemplateResolver templateResolver(){
+        FileTemplateResolver fileTemplateResolver = new FileTemplateResolver();
+        fileTemplateResolver.setCacheable(false);
+        fileTemplateResolver.setPrefix("./web/");
+        fileTemplateResolver.setSuffix(".html");
+        return fileTemplateResolver;
+    }
 
     /*@Bean
     public Client client() throws Exception {

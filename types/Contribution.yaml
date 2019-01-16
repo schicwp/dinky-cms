@@ -1,0 +1,10 @@
+name: Contribution
+fields:
+  - name: type
+    type: String
+    allowedValues:
+      - author
+      - editor
+
+  - name: user
+    type: String

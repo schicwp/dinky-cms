@@ -23,7 +23,7 @@ public class ContentType {
         this.workflow = workflow;
         this.nameField = nameField;
 
-        if (this.workflow == null || this.fields == null)
+        if ( this.fields == null)
             throw new RuntimeException();
     }
 

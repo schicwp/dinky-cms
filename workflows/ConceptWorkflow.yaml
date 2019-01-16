@@ -33,6 +33,7 @@ actions:
             read: true
             write: true
       - name: AddToSearch
+
   - name: Archive
     nextState: Archived
     sourceStates:

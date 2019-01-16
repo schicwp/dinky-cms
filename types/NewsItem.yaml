@@ -7,13 +7,15 @@ fields:
   - name: body
     type: String
 
+  - name: type
+    type: string
+    allowedValues:
+      - headline
+      - bullet
+      - story
+
   - name: embargoDate
     type: Date
-
-
-  - name: ref
-    type: ObjectRef
-    referencedType: Concept
 
   - name: subjects
     type: Collection
@@ -22,6 +24,18 @@ fields:
         referencedType: Concept
 
   - name: genres
+    type: Collection
+    collectionType:
+        type: ObjectRef
+        referencedType: Concept
+
+  - name: tags
+    type: Collection
+    collectionType:
+      type: String
+
+
+  - name: products
     type: Collection
     collectionType:
         type: ObjectRef

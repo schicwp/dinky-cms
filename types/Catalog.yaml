@@ -1,4 +1,4 @@
-name: Concept
+name: Catalog
 workflow: ConceptWorkflow
 nameField: title
 fields:

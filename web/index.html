@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Spring Framework Guru</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body
+ th:with="q=${params['q'] != null and params['q'] != ''?'type:Concept AND ' + params['q']:'type:Concept'},
+            page= ${T(Integer).parseInt(params['page'])}
+"
+>
+<h1>Hello</h1>
+
+ <a th:href="@{.(page=${page + 1})}">next</a>
+
+
+
+<div th:each="c : ${content.find(q,page,10).content}">
+
+    <h3 th:text="${c.content['title']}"></h3>
+    <p th:text="${c.content['description']}"></p>
+
+</div>
+
+<p th:text="${params}"></p>
+
+<h2>Fellow Spring Framework Gurus!!!</h2>
+</body>
+</html>

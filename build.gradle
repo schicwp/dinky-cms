@@ -12,6 +12,7 @@ buildscript {
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -27,6 +28,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     compile("org.springframework.boot:spring-boot-starter-security")
+
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile("org.springframework.boot:spring-boot-devtools")
 
     // https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch
     //compile group: 'org.elasticsearch', name: 'elasticsearch', version: '6.5.4'
