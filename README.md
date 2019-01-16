@@ -83,6 +83,7 @@ POST /api/v1/content/JellyBean
 {
 
 	"action":"PutInBag",
+	"type":"JellyBean",
 	"content":{
 		"flavor":"cinnamon",
 		"color": "red"	
@@ -94,11 +95,11 @@ POST /api/v1/content/JellyBean
 
 Can now be found by type listing:
 
-    GET /api/v1/content/type/JellyBean
+    GET /api/v1/content?type=JellyBean
     
 OR by type and state listing:
 
-    GET /api/v1/content/type/JellyBean/InBag
+    GET /api/v1/content?type=JellyBean&state=InBag
     
 OR id:
 
@@ -130,6 +131,34 @@ OR id:
     }
 },
 ```
+## Content Fields
+
+Content types are composed of fields.
+
+### String
+
+Holds a string.
+
+### Int
+
+Holds an integer.
+
+### Date
+
+Holds a date/time object.
+
+### Binary
+
+Holds a binary file - this can be used for images, attachments, etc.
+
+### Collection
+
+This contains a collection of other items. The items it contains can be any other field type.
+
+### ObjectRef
+
+A reference to another content object, by id. 
+
 
 ## Action Hooks
 
