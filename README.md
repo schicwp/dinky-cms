@@ -81,7 +81,7 @@ fields:
 ### Create Content
 
 ```
-POST /api/v1/content/JellyBean
+POST /api/v1/content
 ```
 
 ```json
@@ -108,7 +108,7 @@ OR by type and state listing:
     
 OR id:
 
-    GET /api/v1/content/item/{id}
+    GET /api/v1/content/{id}
     
     
 ```json
