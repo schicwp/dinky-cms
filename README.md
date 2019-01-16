@@ -125,11 +125,12 @@ OR id:
 		"read":true,
 		"write": true
 	},
-	"group":{
+	"group":{},
+	"other":{
+		"read":false,
+		"write": false
 	}
     },
-    "groupPermissions": "R",
-    "otherPermissions": "NONE",
     "content": {
         "flavor":"cinnamon",
         "color": "red"	
