@@ -20,7 +20,12 @@ Tech Stack:
  - Spring Boot
  
  
-## Basics Setup
+## Basic Setup
+
+For setting up a basic content model, two bits of configuration need to be put in place. These are configured via YAML files that the app reads:
+
+ * Workflow definitions - these contain the process which governs the content - the workflows move the content through a series of states, and can perform various actions on the content. 
+ * Content Definitions - these define the structure of content types used by the app. 
 
 ### Create Workflows
 
