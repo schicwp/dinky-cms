@@ -1,15 +1,7 @@
 package org.schicwp;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.node.InternalSettingsPreparer;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.schicwp.api.ContentResource;
-import org.schicwp.api.ContentSubmission;
+import org.schicwp.api.dto.ContentSubmission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,16 +9,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.thymeleaf.templateresolver.FileTemplateResolver;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -88,6 +75,7 @@ public class Main {
 
                 ContentSubmission contentSubmission = new ContentSubmission();
                 contentSubmission.setAction("Publish");
+                contentSubmission.setType("Concept");
                 contentSubmission.getWorkflow().put("AssignToGroup", Collections.singletonMap("group", "SysAdmins"));
                 contentSubmission.getWorkflow().put("AssignToUser", Collections.singletonMap("user", "will.schick"));
 
@@ -98,7 +86,7 @@ public class Main {
 
                 long start = System.currentTimeMillis();
 
-                contentResource.postContent("Concept", contentSubmission);
+                contentResource.postContent(contentSubmission);
 
                 long stop = System.currentTimeMillis();
 

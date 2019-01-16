@@ -1,4 +1,4 @@
-package org.schicwp.api;
+package org.schicwp.api.dto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,12 +8,11 @@ import java.util.Map;
  */
 public class ContentSubmission {
 
+    private String id;
+    private String type;
     private String action;
-
     private Map<String,Map<String,Object>> workflow = new HashMap<>();
-
     private Map<String, Object> content = new HashMap<>();
-
     private Integer version;
 
     public String getAction() {
@@ -46,5 +45,21 @@ public class ContentSubmission {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

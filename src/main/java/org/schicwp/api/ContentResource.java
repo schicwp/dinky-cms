@@ -1,6 +1,7 @@
 package org.schicwp.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.schicwp.api.dto.ContentSubmission;
 import org.schicwp.model.Content;
 import org.schicwp.persistence.ContentService;
 import org.schicwp.workflow.WorkflowExecutionService;
@@ -35,16 +36,14 @@ public class ContentResource {
     @Autowired
     WorkflowExecutionService workflowExecutionService;
 
-    @PostMapping("{type}")
+    @PostMapping
     public Content postContent(
-            @PathVariable("type") String type,
             @RequestBody ContentSubmission contentSubmission){
-        return workflowExecutionService.executeAction(Optional.empty(), contentSubmission, type);
+        return workflowExecutionService.executeAction( contentSubmission);
     }
 
-    @PostMapping(value = "{type}", consumes = "multipart/form-data")
+    @PostMapping( consumes = "multipart/form-data")
     public Content postContentMultipart(
-            @PathVariable("type") String type,
             MultipartHttpServletRequest request,
             @RequestParam("content") String content
             ) throws IOException{
@@ -52,10 +51,6 @@ public class ContentResource {
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 ContentSubmission contentSubmission = objectMapper.readValue(content,ContentSubmission.class);
-
-
-
-                System.out.println(content);
 
                 request.getFileNames().forEachRemaining((f)->{
 
@@ -65,38 +60,19 @@ public class ContentResource {
                             contentSubmission.getContent().put(k,request.getFile(f));
 
                     }
-
-                    MultipartFile multipartFile = request.getFile(f);
-                    System.out.println(multipartFile.getContentType());
-                    System.out.println(multipartFile.getName());
-                    System.out.println(multipartFile.getOriginalFilename());
-
-                    System.out.println(f);
-
                 });
-        System.out.println("In Controller: " + request);
 
-        //files.keySet().forEach(f -> System.out.println(f));
-
-        return workflowExecutionService.executeAction(Optional.empty(), contentSubmission, type);
+        return workflowExecutionService.executeAction(contentSubmission);
     }
 
 
 
-    @PutMapping("{type}/{id}")
-    public Content postContent(
-            @PathVariable("type") String type,
-            @PathVariable("id") String id,
-            @RequestBody ContentSubmission contentSubmission){
-       return workflowExecutionService.executeAction(Optional.of(id),contentSubmission,type);
-    }
-
-    @GetMapping("item/{id}")
+    @GetMapping("{id}")
     public Content getContent(@PathVariable("id") String id){
         return  contentRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
-    @GetMapping("item/{id}/history")
+    @GetMapping("{id}/history")
     public Page<Content> getContentHistory(
             @PathVariable("id") String id,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -109,9 +85,8 @@ public class ContentResource {
         );
     }
 
-    @GetMapping("type/{type}")
+    @GetMapping
     public Page<Content> listContent(
-            @PathVariable("type") String type,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "page",defaultValue = "0") int page,
             @RequestParam(value = "q",required = false) String q,
@@ -124,7 +99,7 @@ public class ContentResource {
 
         logger.info("Params: " + params);
 
-        Criteria criteria = Criteria.where("type").is(type);
+        Criteria criteria = new Criteria();
 
         for (String k:params.keySet()){
                 criteria = criteria.and(k).is(params.get(k));
@@ -147,44 +122,7 @@ public class ContentResource {
 
 
 
-    @GetMapping("type/{type}/{state}")
-    public Page<Content> listContent(
-            @PathVariable("type") String type,
-            @PathVariable("state") String state,
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "page",defaultValue = "0") int page,
-            @RequestParam(value = "q",required = false) String q,
-            @RequestParam Map<String,String> params){
 
-
-        params.remove("q");
-        params.remove("size");
-        params.remove("page");
-
-        logger.info("Params: " + params);
-
-        Criteria criteria =
-                Criteria.where("type").is(type)
-                .and("state").is(state);
-
-        for (String k:params.keySet()){
-                criteria = criteria.and(k).is(params.get(k));
-        }
-
-        Query query;
-
-        if (q != null)
-            query = new BasicQuery(q).addCriteria(criteria);
-        else
-            query = Query.query(criteria);
-
-        return contentRepository.find(
-                query,
-                PageRequest.of(page,size,
-                        Sort.by("modified").descending()
-                )
-        );
-    }
 
 
 

@@ -1,9 +1,8 @@
 package org.schicwp.workflow;
 
-import org.schicwp.api.ContentSubmission;
+import org.schicwp.api.dto.ContentSubmission;
 import org.schicwp.auth.AuthService;
 import org.schicwp.model.Content;
-import org.schicwp.model.ContentHistory;
 import org.schicwp.model.type.ContentType;
 import org.schicwp.model.type.ContentTypeService;
 import org.schicwp.persistence.ContentService;
@@ -38,17 +37,20 @@ public class WorkflowExecutionService {
     AuthService authService;
 
     @Transactional
-    public Content executeAction(Optional<String> id, ContentSubmission contentSubmission, String type) {
+    public Content executeAction( ContentSubmission contentSubmission) {
 
-        ContentType contentType = contentTypeService.getContentType(type);
+
+        String id = contentSubmission.getId();
+        ContentType contentType = contentTypeService.getContentType(contentSubmission.getType());
 
 
         Content content;
 
-        if (id.isPresent()) {
+        if (id != null) {
 
             Content oldVersion = contentRepository
-                    .findById(id.get()).get();
+                    .findById(id)
+                    .orElse(new Content());
 
             if (contentSubmission.getVersion() != null && oldVersion.getVersion() != contentSubmission.getVersion()){
                 throw new RuntimeException("Conflict");
@@ -63,7 +65,7 @@ public class WorkflowExecutionService {
 
             content.setId(UUID.randomUUID().toString());
             content.setOwner(authService.getCurrentUser().getUsername());
-            content.setType(type);
+            content.setType(contentSubmission.getType());
         }
 
         if (contentType.getNameField() != null){

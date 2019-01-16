@@ -1,4 +1,4 @@
-# TeenyCR
+# Dinky CMS
 
 This is a small, web based content repository service.
 
@@ -154,8 +154,7 @@ actions:
 Standard hooks below:
  
   Name              |  Description                          | Config Parameters              | User Parameters  
- ---                | ---                                   | ---                            | ---              
- AssignToGroup      |  Assigns the group of the content     | group                          | group            
+ ---                | ---                                   | ---                            | ---                     
  AssignToUser       |  Assigns the owner of the content     | user                           | user             
  SetPermissions     |  Sets the permissions of the content  | owner <br/> group <br/> other  | owner <br/> group <br/> other 
  AddToSearch        |  Adds the content to the search       |                                | 
