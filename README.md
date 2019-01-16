@@ -119,10 +119,10 @@ OR id:
     	"owner":{
 		"read":true,
 		"write": true
-	}
+	},
 	"group":{
 	}
-    }
+    },
     "groupPermissions": "R",
     "otherPermissions": "NONE",
     "content": {
