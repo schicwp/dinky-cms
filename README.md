@@ -6,7 +6,7 @@ Features:
  - User defined content types
  - User defined workflows
  - Content and workflow permissioning
- - Robust content indexing and searching
+ - Full text content indexing and searching
  - Content concurrency control using optimistic locking
  - Content version history
  
