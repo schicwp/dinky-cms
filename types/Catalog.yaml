@@ -5,16 +5,10 @@ fields:
   - name: title
     type: String
 
-  - name: code
+  - name: alias
     type: String
     regex: "[A-Za-z]+"
     index: true
 
   - name: description
     type: String
-
-  - name: broader
-    type: Collection
-    collectionType:
-      type: String
-      regex: "[A-Za-z]+"

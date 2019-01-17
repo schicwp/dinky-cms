@@ -2,6 +2,9 @@ name: NewsItemWorkflow
 states:
   - name: Draft
   - name: Published
+  - name: Embargoed
+  - name: Archived
+  - name: InReview
 
 
 actions:
@@ -9,6 +12,27 @@ actions:
   - name: SaveDraft
     entryPoint: true
     nextState: Draft
+    sourceStates:
+     - Draft
+     - Published
+
+  - name: SendForReview
+    entryPoint: true
+    nextState: InReview
+    sourceStates:
+     - Draft
+
+  - name: Embargo
+    entryPoint: true
+    nextState: Embargoed
+    sourceStates:
+     - Draft
+
+  - name: Archive
+    nextState: Archived
+    sourceStates:
+     - Draft
+     - Published
 
   - name: Publish
     entryPoint: true
@@ -16,12 +40,11 @@ actions:
     sourceStates:
      - Draft
      - Published
+     - InReview
     allowedGroups:
      - Editor
     hooks:
     - name: AddToSearch
-    - name: AssignToUser
-      user: bob
     - name: SetPermissions
       group:
         Editors:

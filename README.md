@@ -169,8 +169,8 @@ They must be registered Spring Beans, and they will automatically be made availa
 ```java
 package my.stuff;
 
-import org.schicwp.workflow.ActionHook;
-import org.schicwp.workflow.ActionHookFactory;
+import org.schicwp.dinky.workflow.ActionHook;
+import org.schicwp.dinky.workflow.ActionHookFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

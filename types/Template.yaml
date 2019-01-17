@@ -1,6 +1,5 @@
-name: NewsItem
-workflow: NewsItemWorkflow
-nameField: title
+name: Template
+workflow: ConceptWorkflow
 fields:
   - name: title
     type: String
@@ -15,9 +14,6 @@ fields:
       - bullet
       - story
 
-  - name: embargoDate
-    type: Date
-
   - name: subjects
     type: Collection
     collectionType:
@@ -29,12 +25,6 @@ fields:
     collectionType:
         type: ObjectRef
         referencedType: Concept
-
-  - name: tags
-    type: Collection
-    collectionType:
-      type: String
-
 
   - name: products
     type: Collection

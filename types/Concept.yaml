@@ -13,8 +13,13 @@ fields:
   - name: description
     type: String
 
+
+  - name: catalog
+    type: ObjectRef
+    referencedType: Catalog
+
   - name: broader
     type: Collection
     collectionType:
-      type: String
-      regex: "[A-Za-z]+"
+      type: ObjectRef
+      referencedType: Concept
