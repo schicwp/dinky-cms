@@ -35,9 +35,9 @@ public class Content {
 
     ContentPermissions permissions = new ContentPermissions();
 
-    Map<String,Object> content = new HashMap<>();
+    ContentMap content = new ContentMap();
 
-    public Map<String, Object> getContent() {
+    public ContentMap getContent() {
         return content;
     }
 
@@ -53,7 +53,7 @@ public class Content {
         this.id = id;
     }
 
-    public void setContent(Map<String, Object> content) {
+    public void setContent(ContentMap content) {
         this.content = content;
     }
 
