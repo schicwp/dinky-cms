@@ -1,0 +1,11 @@
+name: TemplateMenuFolder
+workflow: ConceptWorkflow
+nameField: title
+fields:
+
+  - name: title
+    type: String
+
+  - name: parent
+    type: ObjectRef
+    referencedType: TemplateMenuFolder

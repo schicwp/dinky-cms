@@ -1,6 +1,8 @@
 name: Template
 workflow: ConceptWorkflow
+nameField: name
 fields:
+
   - name: title
     type: String
 
