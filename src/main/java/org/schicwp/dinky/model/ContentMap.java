@@ -7,7 +7,7 @@ import java.util.HashMap;
  */
 public class ContentMap extends HashMap<String,Object> {
 
-    <T> T getAs(String key, Class<T> c){
+    public <T> T getAs(String key, Class<T> c){
         return (T)get(key);
     }
 }
