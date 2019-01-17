@@ -6,7 +6,7 @@ Features:
  - User defined content types
  - User defined workflows
  - Content and workflow permissioning
- - Robust content indexing and searching
+ - Full text content indexing and searching
  - Content concurrency control using optimistic locking
  - Content version history
  
@@ -20,7 +20,12 @@ Tech Stack:
  - Spring Boot
  
  
-## Basics Setup
+## Basic Setup
+
+For setting up a basic content model, two bits of configuration need to be put in place. These are configured via YAML files that the app reads:
+
+ * Workflow definitions - these contain the process which governs the content - the workflows move the content through a series of states, and can perform various actions on the content. 
+ * Content Definitions - these define the structure of content types used by the app. 
 
 ### Create Workflows
 
@@ -76,13 +81,14 @@ fields:
 ### Create Content
 
 ```
-POST /api/v1/content/JellyBean
+POST /api/v1/content
 ```
 
 ```json
 {
 
 	"action":"PutInBag",
+	"type":"JellyBean",
 	"content":{
 		"flavor":"cinnamon",
 		"color": "red"	
@@ -94,15 +100,15 @@ POST /api/v1/content/JellyBean
 
 Can now be found by type listing:
 
-    GET /api/v1/content/type/JellyBean
+    GET /api/v1/content?type=JellyBean
     
 OR by type and state listing:
 
-    GET /api/v1/content/type/JellyBean/InBag
+    GET /api/v1/content?type=JellyBean&state=InBag
     
 OR id:
 
-    GET /api/v1/content/item/{id}
+    GET /api/v1/content/{id}
     
     
 ```json
@@ -118,18 +124,47 @@ OR id:
     	"owner":{
 		"read":true,
 		"write": true
+	},
+	"group":{},
+	"other":{
+		"read":false,
+		"write": false
 	}
-	"group":{
-	}
-    }
-    "groupPermissions": "R",
-    "otherPermissions": "NONE",
+    },
     "content": {
         "flavor":"cinnamon",
         "color": "red"	
     }
 },
 ```
+## Content Fields
+
+Content types are composed of fields.
+
+### String
+
+Holds a string.
+
+### Int
+
+Holds an integer.
+
+### Date
+
+Holds a date/time object.
+
+### Binary
+
+Holds a binary file - this can be used for images, attachments, etc.
+
+### Collection
+
+This contains a collection of other items. The items it contains can be any other field type.
+
+### ObjectRef
+
+A reference to another content object, by id. 
+
 
 ## Action Hooks
 
