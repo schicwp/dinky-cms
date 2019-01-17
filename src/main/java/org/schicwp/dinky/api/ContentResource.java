@@ -119,6 +119,7 @@ public class ContentResource {
         );
     }
 
+
     @GetMapping("contentCount")
     public long countContent(
             @RequestParam(value = "q",required = false) String q,
