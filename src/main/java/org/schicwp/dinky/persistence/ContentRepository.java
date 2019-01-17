@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 /**
  * Created by will.schick on 1/4/19.
  */
-interface ContentRepository extends MongoRepository<Content,String> {
+public interface ContentRepository extends MongoRepository<Content,String> {
 
 
 }
