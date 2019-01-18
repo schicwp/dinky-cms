@@ -56,7 +56,7 @@ public class SearchResource {
 
         do {
             content = contentService.find(
-                    Query.query(Criteria.where("searchVersion").not().is(null)),
+                    Query.query(Criteria.where("searchVersion").ne(null)),
                     PageRequest.of(0, 100)
             );
 
