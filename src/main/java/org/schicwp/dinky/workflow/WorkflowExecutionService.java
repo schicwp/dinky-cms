@@ -99,15 +99,17 @@ public class WorkflowExecutionService {
 
             content.setState(action.getNextState());
 
-            action.getActionHooks().forEach((name,hook) -> {
-                hook.execute(content,
-                                contentSubmission
-                                        .getWorkflow()
-                                        .get(name)
-                        );
-            });
+
 
             contentType.convert(content);
+
+            action.getActionHooks().forEach((name,hook) -> {
+                hook.execute(content,
+                        contentSubmission
+                                .getWorkflow()
+                                .get(name)
+                );
+            });
 
             return contentRepository.save(content);
 
