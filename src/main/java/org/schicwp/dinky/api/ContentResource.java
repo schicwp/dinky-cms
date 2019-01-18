@@ -14,7 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -147,11 +149,15 @@ public class ContentResource {
         );
     }
 
-    @ResponseStatus(value= HttpStatus.BAD_REQUEST,
-            reason="Data integrity violation")  // 409
     @ExceptionHandler(ValidationException.class)
-    public ValidationResult validationExceptiomn(ValidationException e) {
-        return e.getValidationResult();
+    public ResponseEntity<ValidationResult> validationExceptiomn(ValidationException e) {
+
+        return new ResponseEntity<>(
+                e.getValidationResult(),
+                new HttpHeaders(),
+                HttpStatus.BAD_REQUEST
+        );
+
     }
 
 
