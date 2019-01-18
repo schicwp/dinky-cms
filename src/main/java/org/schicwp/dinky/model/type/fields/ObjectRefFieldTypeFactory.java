@@ -49,8 +49,8 @@ public class ObjectRefFieldTypeFactory implements FieldTypeFactory {
             }
 
             if ( properties.containsKey("referencedType") ) {
-                if (!properties.get("referencedType").toString().equalsIgnoreCase(referencedContent.getType()))
-                    errors.add("Referenced object is wrong type");{
+                if (!properties.get("referencedType").toString().equalsIgnoreCase(referencedContent.getType())){
+                    errors.add("Referenced object is wrong type");
                     return false;
                 }
             }
