@@ -31,20 +31,29 @@ public class ContentType {
         return workflow;
     }
 
-    public boolean validate(Content content){
+    public ValidationResult validate(Content content){
 
-        boolean ok = true;
+        ValidationResult result = new ValidationResult();
 
         for (Field field: fields){
-            if (field.isRequired() && !content.getContent().containsKey(field.getName()))
-                ok = false;
+            List<String> fieldErrors = new ArrayList<>();
+            result.getFieldErrors().put(field.getName(),fieldErrors);
+            if (field.isRequired() && !content.getContent().containsKey(field.getName())) {
+                fieldErrors.add("Required");
+                result.setValid(false);
+            }
 
             if (content.getContent().containsKey(field.getName())){
-                ok &= field.validateSubmission(content.getContent().get(field.getName()));
+
+
+                if (!field.validateSubmission(content.getContent().get(field.getName()),fieldErrors)) {
+                    result.setValid(false);
+
+                }
             }
         }
 
-        return ok;
+        return result;
     }
 
     public Content sanitize(Content content){

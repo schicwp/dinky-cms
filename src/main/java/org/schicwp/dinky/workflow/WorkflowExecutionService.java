@@ -5,6 +5,7 @@ import org.schicwp.dinky.auth.AuthService;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.type.ContentType;
 import org.schicwp.dinky.model.type.ContentTypeService;
+import org.schicwp.dinky.model.type.ValidationResult;
 import org.schicwp.dinky.persistence.ContentService;
 import org.schicwp.dinky.search.SearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,8 @@ public class WorkflowExecutionService {
 
         contentType.sanitize(content);
 
-        if (!contentType.validate(content))
+        ValidationResult validate = contentType.validate(content);
+        if (!validate.isValid())
             throw new RuntimeException("Invalid content");
 
 

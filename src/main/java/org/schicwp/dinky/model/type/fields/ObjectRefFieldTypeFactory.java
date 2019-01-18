@@ -42,12 +42,17 @@ public class ObjectRefFieldTypeFactory implements FieldTypeFactory {
 
             Content referencedContent = mongoTemplate.findById(object,Content.class);
 
-            if (referencedContent == null)
+            if (referencedContent == null) {
+                errors.add("Cannot find referenced object");
                 return false;
+
+            }
 
             if ( properties.containsKey("referencedType") ) {
                 if (!properties.get("referencedType").toString().equalsIgnoreCase(referencedContent.getType()))
+                    errors.add("Referenced object is wrong type");{
                     return false;
+                }
             }
 
             return (object instanceof String);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -33,10 +34,15 @@ public class DateFieldTypeFactory implements FieldTypeFactory {
             if (object == null)
                 return true;
 
+            if (object instanceof Date)
+                return true;
+
+
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
                 dateFormat.parse((String) object);
             }catch (Exception e){
+                errors.add("Cannot parse date");
                 return false;
             }
 

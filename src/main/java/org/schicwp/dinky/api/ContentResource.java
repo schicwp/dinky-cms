@@ -3,6 +3,8 @@ package org.schicwp.dinky.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.schicwp.dinky.api.dto.ContentSubmission;
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.type.ValidationException;
+import org.schicwp.dinky.model.type.ValidationResult;
 import org.schicwp.dinky.persistence.ContentService;
 import org.schicwp.dinky.workflow.WorkflowExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -142,6 +145,13 @@ public class ContentResource {
         return contentRepository.count(
                 query
         );
+    }
+
+    @ResponseStatus(value= HttpStatus.BAD_REQUEST,
+            reason="Data integrity violation")  // 409
+    @ExceptionHandler(ValidationException.class)
+    public ValidationResult validationExceptiomn(ValidationException e) {
+        return e.getValidationResult();
     }
 
 

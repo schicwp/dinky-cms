@@ -3,6 +3,7 @@ package org.schicwp.dinky.model.type;
 import org.schicwp.dinky.model.Content;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -36,10 +37,10 @@ public class Field {
         return name;
     }
 
-    public boolean validateSubmission(Object object){
+    public boolean validateSubmission(Object object, Collection<String> errors){
 
 
-        return fieldType.validateSubmission(object,properites, new ArrayList<>());
+        return fieldType.validateSubmission(object,properites, errors);
     }
 
     public boolean isIndexed() {
