@@ -1,5 +1,7 @@
 # Dinky CMS
 
+_Dinky (\ˈdiŋ-kē \): overly or unattractively small_
+
 This is a small, web based content repository service.
 
 Features:
