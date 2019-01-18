@@ -1,6 +1,7 @@
 package org.schicwp.dinky.api;
 
 import org.schicwp.dinky.api.dto.AuthRequest;
+import org.schicwp.dinky.api.dto.AuthResponse;
 import org.schicwp.dinky.auth.AuthService;
 import org.schicwp.dinky.auth.User;
 import org.schicwp.dinky.security.JWTEncoder;
@@ -29,8 +30,8 @@ public class AuthResource {
 
 
     @PostMapping("token")
-    String getToken(@RequestBody AuthRequest authRequest){
-        return JWTEncoder.getToken(authRequest.getUsername(),authRequest.getPassword());
+    AuthResponse getToken(@RequestBody AuthRequest authRequest){
+        return new AuthResponse(JWTEncoder.getToken(authRequest.getUsername(),authRequest.getPassword()));
     }
 
 }
