@@ -55,6 +55,9 @@ public class DateFieldTypeFactory implements FieldTypeFactory {
             if (input == null)
                 return null;
 
+            if (input instanceof Date)
+                return input;
+
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
                 return dateFormat.parse((String) input);
