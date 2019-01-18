@@ -54,10 +54,12 @@ public class SearchResource {
 
         Page<Content> content;
 
+        int i = 0;
+
         do {
             content = contentService.find(
                     Query.query(Criteria.where("searchVersion").ne(null)),
-                    PageRequest.of(0, 100)
+                    PageRequest.of(i++, 100)
             );
 
             content.forEach(c->{
