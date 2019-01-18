@@ -16,26 +16,34 @@ public class Content {
 
     @Indexed
     @Id
-    String id;
-    int version = 0;
+    private String id;
     @Indexed
-    Date created = new Date();
+    private int version = 0;
     @Indexed
-    Date modified = new Date();
+    private Date created = new Date();
     @Indexed
-    String state;
+    private Date modified = new Date();
     @Indexed
-    String type;
+    private String state;
     @Indexed
-    String owner;
+    private String type;
     @Indexed
-    String name;
+    private String owner;
     @Indexed
-    Integer searchVersion = null;
+    private String name;
+    @Indexed
+    private Integer searchVersion = null;
+    private ContentPermissions permissions = new ContentPermissions();
+    private ContentMap content = new ContentMap();
 
-    ContentPermissions permissions = new ContentPermissions();
+    public Content merge(Map<String,Object> properties){
 
-    ContentMap content = new ContentMap();
+        this.content.putAll(properties);
+        this.version++;
+        this.modified = new Date();
+
+        return this;
+    }
 
     public ContentMap getContent() {
         return content;
@@ -59,15 +67,6 @@ public class Content {
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public Content merge(Map<String,Object> properties){
-
-        this.content.putAll(properties);
-        this.version++;
-        this.modified = new Date();
-
-        return this;
     }
 
     public String getId() {

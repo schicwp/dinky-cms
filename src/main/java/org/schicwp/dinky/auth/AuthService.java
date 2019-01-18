@@ -2,6 +2,7 @@ package org.schicwp.dinky.auth;
 
 import org.schicwp.dinky.model.Content;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.Index;
@@ -17,18 +18,21 @@ import java.util.Map;
  * Created by will.schick on 1/5/19.
  */
 @Service
+@ConfigurationProperties("auth")
 public class AuthService {
 
-
-
     private Map<String,String> groupMap = new HashMap<>();
+
+    public void setGroupMap(Map<String, String> groupMap) {
+        this.groupMap = groupMap;
+    }
 
     @Autowired
     MongoOperations mongoOperations;
 
     @PostConstruct
     void init(){
-        groupMap.put("af-specification-editor","Editors");
+        System.out.println(groupMap);
 
         groupMap.values().forEach( s-> {
                     mongoOperations

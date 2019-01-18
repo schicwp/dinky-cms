@@ -8,8 +8,8 @@ import java.util.List;
  */
 public class User {
 
-    String username;
-    List<String> groups = new ArrayList<>();
+    private String username;
+    private List<String> groups = new ArrayList<>();
 
     public String getUsername() {
         return username;

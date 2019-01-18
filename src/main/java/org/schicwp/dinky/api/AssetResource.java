@@ -28,14 +28,17 @@ public class AssetResource {
     @GetMapping("{id}")
     void getAsset(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
 
-        GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+        GridFSFile file = gridFsTemplate
+                .findOne(new Query(Criteria.where("_id").is(id)));
 
-        response.addHeader("Content-Type", file.getMetadata().getString("contentType"));
+        response.addHeader(
+                "Content-Type",
+                file.getMetadata().getString("contentType")
+        );
 
-
-        InputStream out =  gridFsTemplate.getResource(Objects.requireNonNull(file).getFilename()).getInputStream();
-
-
+        InputStream out =  gridFsTemplate
+                .getResource(Objects.requireNonNull(file).getFilename())
+                .getInputStream();
 
         byte[] buffer = new byte[1024];
 
