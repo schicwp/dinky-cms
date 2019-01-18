@@ -1,5 +1,6 @@
 package org.schicwp.dinky.api.dto;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,9 @@ import java.util.Map;
 public class ContentSubmission {
 
     private String id;
+    @NotNull
     private String type;
+    @NotNull
     private String action;
     private Map<String,Map<String,Object>> workflow = new HashMap<>();
     private Map<String, Object> content = new HashMap<>();

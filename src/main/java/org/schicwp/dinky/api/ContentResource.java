@@ -96,8 +96,6 @@ public class ContentResource {
         params.remove("size");
         params.remove("page");
 
-        logger.info("Params: " + params);
-
         Criteria criteria = new Criteria();
 
         for (String k:params.keySet()){
@@ -127,8 +125,6 @@ public class ContentResource {
     ){
 
         params.remove("q");
-
-        logger.info("Params: " + params);
 
         Criteria criteria = new Criteria();
 

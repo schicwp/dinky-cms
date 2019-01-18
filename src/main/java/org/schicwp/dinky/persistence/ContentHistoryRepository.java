@@ -11,4 +11,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface ContentHistoryRepository extends MongoRepository<ContentHistory,String> {
 
     Page<ContentHistory> findAllByContentId(String id, Pageable pageable);
+
+    ContentHistory findByContentIdAndContentVersion(String id, int version);
 }

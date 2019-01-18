@@ -2,16 +2,18 @@ package org.schicwp.dinky.api;
 
 import org.elasticsearch.index.query.QueryBuilders;
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentHistory;
+import org.schicwp.dinky.persistence.ContentHistoryRepository;
+import org.schicwp.dinky.persistence.ContentService;
 import org.schicwp.dinky.search.SearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by will.schick on 1/6/19.
@@ -26,6 +28,12 @@ public class SearchResource {
     @Autowired
     SearchRepository searchRepository;
 
+    @Autowired
+    ContentService contentService;
+
+    @Autowired
+    ContentHistoryRepository contentHistoryRepository;
+
     @GetMapping
     public Page<Content> search(
             @RequestParam("q") String q,
@@ -37,6 +45,38 @@ public class SearchResource {
                 QueryBuilders.queryStringQuery(q),
                 PageRequest.of(page,size, Sort.by("modified").descending())
         );
+    }
+
+    @DeleteMapping
+    public void rebuildIndex(){
+        elasticsearchTemplate.deleteIndex(Content.class);
+
+
+        Page<Content> content;
+
+        do {
+            content = contentService.find(
+                    Query.query(Criteria.where("searchVersion").not().is(null)),
+                    PageRequest.of(0, 100)
+            );
+
+            content.forEach(c->{
+
+
+                ContentHistory contentHistory = contentHistoryRepository.findByContentIdAndContentVersion(
+                        c.getId(),c.getVersion()
+                );
+
+                searchRepository.save(contentHistory.getContent());
+
+
+
+            });
+
+        }while (!content.isLast());
+
+
+
     }
 
 
