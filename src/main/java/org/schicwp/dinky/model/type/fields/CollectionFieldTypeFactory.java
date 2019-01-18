@@ -42,8 +42,11 @@ public class CollectionFieldTypeFactory implements FieldTypeFactory {
         @Override
         public boolean validateSubmission(Object object, Map<String, Object> properties, Collection<String> errors) {
 
-            if (! Collection.class.isAssignableFrom(object.getClass()))
+            if (! Collection.class.isAssignableFrom(object.getClass())) {
+                errors.add("Must be collection type");
                 return false;
+
+            }
 
             Map<String,Object> collectionType = (Map<String,Object>)properties.get("collectionType");
 
@@ -54,8 +57,10 @@ public class CollectionFieldTypeFactory implements FieldTypeFactory {
             Collection<?> collection = (Collection)object;
 
             for (Object o:collection){
-                if (!fieldType.validateSubmission(o,collectionType,errors))
+                if (!fieldType.validateSubmission(o,collectionType,errors)) {
+                    errors.add("One or more of collection is invalid");
                     return false;
+                }
             }
 
 

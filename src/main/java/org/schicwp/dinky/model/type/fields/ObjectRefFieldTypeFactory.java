@@ -55,7 +55,7 @@ public class ObjectRefFieldTypeFactory implements FieldTypeFactory {
                 }
             }
 
-            return (object instanceof String);
+            return true;
         }
 
         @Override
