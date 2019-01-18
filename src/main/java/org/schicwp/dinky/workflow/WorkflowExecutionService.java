@@ -5,6 +5,7 @@ import org.schicwp.dinky.auth.AuthService;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.type.ContentType;
 import org.schicwp.dinky.model.type.ContentTypeService;
+import org.schicwp.dinky.model.type.ValidationException;
 import org.schicwp.dinky.model.type.ValidationResult;
 import org.schicwp.dinky.persistence.ContentService;
 import org.schicwp.dinky.search.SearchRepository;
@@ -77,7 +78,7 @@ public class WorkflowExecutionService {
 
         ValidationResult validate = contentType.validate(content);
         if (!validate.isValid())
-            throw new RuntimeException("Invalid content");
+            throw new ValidationException(validate);
 
 
         Optional<Action> actionOptional = contentType.getWorkflow()
