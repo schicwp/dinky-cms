@@ -234,6 +234,30 @@ public class MyHookFactory implements ActionHookFactory {
 }
 ```
 
+#### Bypassing Permissions In Custom Business
+
+In some cases, it may be needed to bypass the permission system that restricts users, for example, if there are
+async workflow actions which don't have a security context associated with them.
+
+```java
+
+    @Autowired
+    AuthService authService;
+    
+    @Autowired
+    ContentService contentService;
+
+    public void myBusiness(){
+
+        Objcet thing = authService.withSystemUser(()->{
+          
+	  return contentService.find(...);
+
+        });
+
+    }
+```
+
 ### Changing Content Values in ActionHooks
 
 ActionHooks may change content values, if they wish. This opens up the potential of side effects between different
