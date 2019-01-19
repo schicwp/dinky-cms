@@ -1,6 +1,7 @@
 package org.schicwp.dinky.search;
 
 import org.elasticsearch.index.query.QueryBuilders;
+import org.schicwp.dinky.content.PermissionService;
 import org.schicwp.dinky.model.Content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,17 +20,10 @@ public class SearchService {
 
     public Page<Content> find(String q, int page, int size) {
 
-        System.out.println("Finding..." + q);
-
-        Page<Content> content  = searchRepository.search(
+        return searchRepository.search(
                 QueryBuilders.queryStringQuery(q),
                 PageRequest.of(page, size, Sort.by("modified").descending())
         );
-
-        content.getContent();
-
-
-        return content;
     }
 
 }

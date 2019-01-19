@@ -1,4 +1,4 @@
-package org.schicwp.dinky.persistence;
+package org.schicwp.dinky.content;
 
 import org.schicwp.dinky.model.Content;
 import org.springframework.beans.factory.annotation.Autowired;

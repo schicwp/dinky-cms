@@ -12,10 +12,10 @@ import java.util.Map;
 public class ContentPermissions {
 
 
-    Permission owner = new Permission(true, true);
-    Permission other = new Permission(false, false);
-
-    Map<String,Permission> group = new HashMap<>();
+    private Permission owner = new Permission(true, true);
+    private Permission assignee = new Permission(true,true);
+    private Permission other = new Permission(false, false);
+    private Map<String,Permission> group = new HashMap<>();
 
     public Permission getOwner() {
         return owner;
@@ -39,5 +39,13 @@ public class ContentPermissions {
 
     public void setGroup(Map<String, Permission> group) {
         this.group = group;
+    }
+
+    public Permission getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(Permission assignee) {
+        this.assignee = assignee;
     }
 }

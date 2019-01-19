@@ -7,12 +7,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by will.schick on 1/5/19.
@@ -27,13 +31,15 @@ public class AuthService {
         this.groupMap = groupMap;
     }
 
+    private final ThreadLocal<User> forcedUser = new ThreadLocal<>();
+
+    private static final User SYSTEM_USER = new User("system", Collections.emptyList(),true);
+
     @Autowired
     MongoOperations mongoOperations;
 
     @PostConstruct
     void init(){
-        System.out.println(groupMap);
-
         groupMap.values().forEach( s-> {
                     mongoOperations
                             .indexOps(Content.class)
@@ -52,22 +58,43 @@ public class AuthService {
 
 
     public User getCurrentUser(){
-        User user = new User();
+
+        if (forcedUser.get() != null)
+            return forcedUser.get();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
-            user.setUsername(
-                    authentication.getName()
+
+            return new User(
+                    authentication.getName(),
+                    authentication.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .map(groupMap::get)
+                        .collect(Collectors.toList()),
+                    false
             );
-
-            authentication.getAuthorities().forEach(a -> {
-
-                if (groupMap.containsKey(a.getAuthority()))
-                    user.getGroups().add(groupMap.get(a.getAuthority()));
-            });
         }
 
-        return user;
+        return null;
+    }
+
+    public <T> T withSystemUser(Supplier<T> supplier){
+        try {
+            forcedUser.set(SYSTEM_USER);
+            return supplier.get();
+        }finally {
+            forcedUser.remove();
+        }
+    }
+
+    public void withSystemUser(Runnable supplier){
+        try {
+            forcedUser.set(SYSTEM_USER);
+            supplier.run();
+        }finally {
+            forcedUser.remove();
+        }
     }
 }

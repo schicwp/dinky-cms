@@ -17,21 +17,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthResource {
 
-
-
     @Autowired
     AuthService authService;
-
 
     @GetMapping("current")
     User getCurrentUser(){
         return authService.getCurrentUser();
     }
 
-
     @PostMapping("token")
     AuthResponse getToken(@RequestBody AuthRequest authRequest){
         return new AuthResponse(JWTEncoder.getToken(authRequest.getUsername(),authRequest.getPassword()));
     }
-
 }

@@ -30,11 +30,23 @@ public class Content {
     @Indexed
     private String owner;
     @Indexed
+    private String assignedUser;
+    @Indexed
+    private String assignedGroup;
+    @Indexed
     private String name;
     @Indexed
     private Integer searchVersion = null;
     private ContentPermissions permissions = new ContentPermissions();
     private ContentMap content = new ContentMap();
+
+    public Content(){}
+
+    public Content(String id, String owner, String type){
+        this.id = id;
+        this.owner = owner;
+        this.type = type;
+    }
 
     public Content merge(Map<String,Object> properties){
 
@@ -133,6 +145,22 @@ public class Content {
 
     public void setPermissions(ContentPermissions permissions) {
         this.permissions = permissions;
+    }
+
+    public String getAssignedGroup() {
+        return assignedGroup;
+    }
+
+    public String getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(String assignedUser) {
+        this.assignedUser = assignedUser;
+    }
+
+    public void setAssignedGroup(String assignedGroup) {
+        this.assignedGroup = assignedGroup;
     }
 
     @Override

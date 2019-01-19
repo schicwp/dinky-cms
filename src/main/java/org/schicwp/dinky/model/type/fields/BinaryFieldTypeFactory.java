@@ -6,6 +6,8 @@ import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.type.FieldType;
 import org.schicwp.dinky.model.type.FieldTypeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +46,18 @@ public class BinaryFieldTypeFactory implements FieldTypeFactory {
         @Override
         public boolean validateSubmission(Object object, Map<String, Object> properties, Collection<String> errors) {
 
+            if (object instanceof MultipartFile)
+                return true;
+
+            if (object instanceof String){
+                String id = (String)object;
+
+                if (gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(id))) == null){
+                    errors.add("Value is not a file id");
+                    return false;
+                }
+            }
+
             return (object instanceof MultipartFile);
         }
 
@@ -57,6 +71,7 @@ public class BinaryFieldTypeFactory implements FieldTypeFactory {
                 DBObject metaData = new BasicDBObject();
                 metaData.put("contentType",multipartFile.getContentType());
                 metaData.put("filename",multipartFile.getOriginalFilename());
+                metaData.put("contentId",content.getId());
 
                 return gridFsTemplate.store(
                         multipartFile.getInputStream(),

@@ -2,13 +2,15 @@ package org.schicwp.dinky.workflow;
 
 import org.schicwp.dinky.api.dto.ContentSubmission;
 import org.schicwp.dinky.auth.AuthService;
+import org.schicwp.dinky.content.PermissionService;
+import org.schicwp.dinky.exceptions.OptimisticLockingException;
+import org.schicwp.dinky.exceptions.PermissionException;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.type.ContentType;
 import org.schicwp.dinky.model.type.ContentTypeService;
-import org.schicwp.dinky.model.type.ValidationException;
+import org.schicwp.dinky.exceptions.ValidationException;
 import org.schicwp.dinky.model.type.ValidationResult;
-import org.schicwp.dinky.persistence.ContentService;
-import org.schicwp.dinky.search.SearchRepository;
+import org.schicwp.dinky.content.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class WorkflowExecutionService {
     ContentTypeService contentTypeService;
 
     @Autowired
-    SearchRepository searchRepository;
+    PermissionService permissionService;
 
     @Autowired
     AuthService authService;
@@ -41,34 +43,42 @@ public class WorkflowExecutionService {
     @Transactional
     public Content executeAction( ContentSubmission contentSubmission) {
 
-
         String id = contentSubmission.getId();
         ContentType contentType = contentTypeService.getContentType(contentSubmission.getType());
 
-
-        Content content;
+        Content oldContent;
 
         if (id != null) {
 
-            Content oldVersion = contentRepository
-                    .findById(id)
-                    .orElse(new Content());
+            Optional<Content> contentOptional = contentRepository
+                    .findById(id);
 
-            if (contentSubmission.getVersion() != null && oldVersion.getVersion() != contentSubmission.getVersion()){
-                throw new RuntimeException("Conflict");
+            if (contentOptional.isPresent() && !permissionService.allowWrite(contentOptional.get()))
+                throw new PermissionException();
+
+            Content oldVersion = contentOptional.orElse(
+                    new Content(
+                            id,
+                            authService.getCurrentUser().getUsername(),
+                            contentSubmission.getType())
+            );
+
+            if (contentSubmission.getVersion() != null &&
+                    oldVersion.getVersion() != contentSubmission.getVersion()){
+                throw new OptimisticLockingException();
             }
 
-            content = oldVersion
-                    .merge(contentSubmission.getContent());
+            oldContent = oldVersion;
 
         } else {
-            content = new Content()
-                    .merge(contentSubmission.getContent());
-
-            content.setId(UUID.randomUUID().toString());
-            content.setOwner(authService.getCurrentUser().getUsername());
-            content.setType(contentSubmission.getType());
+            oldContent = new Content(
+                    UUID.randomUUID().toString(),
+                    authService.getCurrentUser().getUsername(),
+                    contentSubmission.getType()
+            );
         }
+
+        Content content = oldContent.merge(contentSubmission.getContent());
 
         if (contentType.getNameField() != null){
             content.setName((String)content.getContent().get(contentType.getNameField()));
@@ -84,40 +94,39 @@ public class WorkflowExecutionService {
         Optional<Action> actionOptional = contentType.getWorkflow()
                 .getActionFromState(content.getState(),contentSubmission.getAction());
 
-        if (actionOptional.isPresent()){
-            Action action = actionOptional.get();
+        if (!actionOptional.isPresent())
+            throw new RuntimeException("Invalid Action");
 
-            if (content.getId() != null)
-                logger.info(
-                        String.format("Performing action [%s] on [%s] to change state from [%s] to [%s]",
-                            action.getName(),content.getId(),content.getState(),action.getNextState()
-                        )
-                );
-            else
-                logger.info(
-                        String.format("Entering workflow with new content with action [%s] to state [%s]",
-                                action.getName(),action.getNextState()
-                        )
-                );
+        Action action = actionOptional.get();
 
-            content.setState(action.getNextState());
+        if (id != null)
+            logger.info(
+                    String.format("Performing action [%s] on [%s] to change state from [%s] to [%s]",
+                        action.getName(),content.getId(),content.getState(),action.getNextState()
+                    )
+            );
+        else
+            logger.info(
+                    String.format("Entering workflow with new content with action [%s] to state [%s]",
+                            action.getName(),action.getNextState()
+                    )
+            );
+
+        content.setState(action.getNextState());
+
+        contentType.convert(content);
+
+        action.getActionHooks().forEach((name,hook) -> {
+            hook.execute(content,
+                    contentSubmission
+                            .getWorkflow()
+                            .get(name)
+            );
+        });
+
+        return contentRepository.save(content);
 
 
 
-            contentType.convert(content);
-
-            action.getActionHooks().forEach((name,hook) -> {
-                hook.execute(content,
-                        contentSubmission
-                                .getWorkflow()
-                                .get(name)
-                );
-            });
-
-            return contentRepository.save(content);
-
-
-        } else
-            throw new RuntimeException("Invalid Action: " + contentSubmission.getAction());
     }
 }

@@ -1,4 +1,6 @@
-package org.schicwp.dinky.model.type;
+package org.schicwp.dinky.exceptions;
+
+import org.schicwp.dinky.model.type.ValidationResult;
 
 /**
  * Created by will.schick on 1/18/19.

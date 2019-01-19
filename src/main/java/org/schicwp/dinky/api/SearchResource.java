@@ -1,10 +1,11 @@
 package org.schicwp.dinky.api;
 
 import org.elasticsearch.index.query.QueryBuilders;
+import org.schicwp.dinky.auth.AuthService;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.ContentHistory;
 import org.schicwp.dinky.persistence.ContentHistoryRepository;
-import org.schicwp.dinky.persistence.ContentService;
+import org.schicwp.dinky.content.ContentService;
 import org.schicwp.dinky.search.SearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,9 @@ public class SearchResource {
     @Autowired
     ContentHistoryRepository contentHistoryRepository;
 
+    @Autowired
+    AuthService authService;
+
     @GetMapping
     public Page<Content> search(
             @RequestParam("q") String q,
@@ -49,35 +53,32 @@ public class SearchResource {
 
     @DeleteMapping
     public void rebuildIndex(){
-        elasticsearchTemplate.deleteIndex(Content.class);
 
+        authService.withSystemUser(()->{
 
-        Page<Content> content;
+            elasticsearchTemplate.deleteIndex(Content.class);
 
-        int i = 0;
+            Page<Content> content;
 
-        do {
-            content = contentService.find(
-                    Query.query(Criteria.where("searchVersion").ne(null)),
-                    PageRequest.of(i++, 100)
-            );
+            int i = 0;
 
-            content.forEach(c->{
-
-
-                ContentHistory contentHistory = contentHistoryRepository.findByContentIdAndContentVersion(
-                        c.getId(),c.getVersion()
+            do {
+                content = contentService.find(
+                        Query.query(Criteria.where("searchVersion").ne(null)),
+                        PageRequest.of(i++, 100)
                 );
 
-                searchRepository.save(contentHistory.getContent());
+                content.forEach(c->{
+                    ContentHistory contentHistory = contentHistoryRepository.findByContentIdAndContentVersion(
+                            c.getId(),c.getVersion()
+                    );
 
+                    searchRepository.save(contentHistory.getContent());
+                });
 
+            }while (!content.isLast());
 
-            });
-
-        }while (!content.isLast());
-
-
+        });
 
     }
 

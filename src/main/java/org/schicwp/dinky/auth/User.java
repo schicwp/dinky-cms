@@ -11,6 +11,14 @@ public class User {
     private String username;
     private List<String> groups = new ArrayList<>();
 
+    private boolean systemUser = false;
+
+    public User(String username,List<String> groups, boolean systemUser){
+        this.username = username;
+        this.groups = groups;
+        this.systemUser = systemUser;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -25,5 +33,9 @@ public class User {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public boolean isSystemUser() {
+        return systemUser;
     }
 }

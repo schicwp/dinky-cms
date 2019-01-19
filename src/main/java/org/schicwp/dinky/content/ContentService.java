@@ -1,21 +1,20 @@
-package org.schicwp.dinky.persistence;
+package org.schicwp.dinky.content;
 
-import org.schicwp.dinky.auth.AuthService;
-import org.schicwp.dinky.auth.User;
+import org.schicwp.dinky.exceptions.PermissionException;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.ContentHistory;
+import org.schicwp.dinky.persistence.ContentHistoryRepository;
+import org.schicwp.dinky.persistence.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by will.schick on 1/5/19.
@@ -33,7 +32,7 @@ public class ContentService {
     MongoTemplate mongoTemplate;
 
     @Autowired
-    AuthService authService;
+    PermissionService permissionService;
 
     @Autowired
     QueryTotalCache queryTotalCache;
@@ -48,6 +47,10 @@ public class ContentService {
     }
 
     public Page<Content> getHistory(String id, Pageable pageable){
+
+        if (!this.findById(id).isPresent())
+            throw new NoSuchElementException("No such element");
+
         return contentHistoryRepository
                 .findAllByContentId(id,pageable)
                 .map(ContentHistory::getContent);
@@ -55,20 +58,24 @@ public class ContentService {
 
 
     public Optional<Content> findById(String s) {
-        return contentRepository.findById(s);
+        Optional<Content> byId = contentRepository
+                .findById(s);
+
+        if (byId.isPresent() && !permissionService.allowRead(byId.get()))
+            throw new PermissionException();
+
+        return byId;
     }
 
     public Page<Content> find(Query query,Pageable pageable) {
 
-        Criteria userCrit = getPermissionFilter();
+        Query finalQuery = query.addCriteria(
+                permissionService.getPermissionFilter()
+        ).with(pageable);
 
-
-        Query finalQuery = query.addCriteria(userCrit).with(pageable);
-
-        List<Content> result =  mongoTemplate.find(finalQuery,Content.class);
 
         return  PageableExecutionUtils.getPage(
-                result,
+                mongoTemplate.find(finalQuery,Content.class),
                 pageable,
                 () -> queryTotalCache.getCountForQuery(finalQuery)
         );
@@ -76,29 +83,12 @@ public class ContentService {
 
     public long count(Query query){
         return queryTotalCache
-                .getCountForQuery(query.addCriteria(getPermissionFilter()));
-    }
-
-    private Criteria getPermissionFilter() {
-        User user = authService.getCurrentUser();
-
-
-        List<Criteria> criteria = user.getGroups().stream().map(s->
-                Criteria.where("permissions.group." + s + ".read").is(true)
-        ).collect(Collectors.toList());
-
-        criteria.add(
-                Criteria.where("owner").is(user.getUsername()).and("permissions.owner.read").is(true)
-        );
-
-        criteria.add(
-                Criteria.where("permissions.other.read").is(true)
-        );
-
-
-        return new Criteria()
-                .orOperator(
-                        criteria.toArray(new Criteria[0])
+                .getCountForQuery(
+                        query.addCriteria(
+                                permissionService.getPermissionFilter()
+                        )
                 );
     }
+
+
 }
