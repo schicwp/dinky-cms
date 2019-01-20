@@ -52,7 +52,7 @@ public class ContentService {
             throw new NoSuchElementException("No such element");
 
         return contentHistoryRepository
-                .findAllByContentId(id,pageable)
+                .findAllByContentIdOrderByContentVersionDesc(id,pageable)
                 .map(ContentHistory::getContent);
     }
 
