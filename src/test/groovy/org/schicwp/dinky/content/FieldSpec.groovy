@@ -3,7 +3,6 @@ package org.schicwp.dinky.content
 import org.schicwp.dinky.model.Content
 import org.schicwp.dinky.model.ContentMap
 import org.schicwp.dinky.model.type.Field
-import org.schicwp.dinky.model.type.FieldFactory
 import org.schicwp.dinky.model.type.FieldType
 import org.schicwp.dinky.model.type.FieldTypeService
 import spock.lang.Specification

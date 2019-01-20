@@ -30,6 +30,10 @@ public class RemoveFromSearch implements ActionHookFactory {
 
     @Override
     public ActionHook createActionHook(Map<String, Object> config) {
+
+        String index = (String)config.getOrDefault("index","default");
+
+
         return (content, actionConfig) -> {
             logger.info(String.format("Removing [%s] from search index.", content));
 
@@ -37,7 +41,7 @@ public class RemoveFromSearch implements ActionHookFactory {
                     searchRepository.findById(content.getId());
 
             saved.ifPresent(searchRepository::delete);
-            content.setSearchVersion(null);
+            content.getSearchVersions().remove(index);
 
         };
     }

@@ -7,6 +7,7 @@ import org.schicwp.dinky.model.ContentHistory;
 import org.schicwp.dinky.persistence.ContentHistoryRepository;
 import org.schicwp.dinky.content.ContentService;
 import org.schicwp.dinky.search.SearchRepository;
+import org.schicwp.dinky.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,8 +27,6 @@ public class SearchResource {
     @Autowired
     ElasticsearchTemplate elasticsearchTemplate;
 
-    @Autowired
-    SearchRepository searchRepository;
 
     @Autowired
     ContentService contentService;
@@ -38,45 +37,52 @@ public class SearchResource {
     @Autowired
     AuthService authService;
 
-    @GetMapping
+    @Autowired
+    SearchService searchService;
+
+    @GetMapping("{index}")
     public Page<Content> search(
+            @PathVariable("index") String index,
             @RequestParam("q") String q,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "page",defaultValue = "0") int page
     ){
 
-        return searchRepository.search(
-                QueryBuilders.queryStringQuery(q),
-                PageRequest.of(page,size, Sort.by("modified").descending())
-        );
+        return searchService.withIndex(index,searchRepository -> {
+            return searchRepository.search(
+                    QueryBuilders.queryStringQuery(q),
+                    PageRequest.of(page,size, Sort.by("modified").descending())
+            );
+        });
     }
 
-    @DeleteMapping
-    public void rebuildIndex(){
+    @DeleteMapping("{index}")
+    public void rebuildIndex(@PathVariable("index") String index){
 
         authService.withSystemUser(()->{
 
-            elasticsearchTemplate.deleteIndex(Content.class);
+            elasticsearchTemplate.deleteIndex(index);
 
-            Page<Content> content;
+            searchService.withIndex(index,searchRepository -> {
+                Page<Content> content;
 
-            int i = 0;
-
-            do {
-                content = contentService.find(
-                        Query.query(Criteria.where("searchVersion").ne(null)),
-                        PageRequest.of(i++, 100)
-                );
-
-                content.forEach(c->{
-                    ContentHistory contentHistory = contentHistoryRepository.findByContentIdAndContentVersion(
-                            c.getId(),c.getVersion()
+                int i = 0;
+                do {
+                    content = contentService.find(
+                            Query.query(Criteria.where("searchVersion").ne(null)),
+                            PageRequest.of(i++, 100)
                     );
 
-                    searchRepository.save(contentHistory.getContent());
-                });
+                    content.forEach(c->{
+                        ContentHistory contentHistory = contentHistoryRepository.findByContentIdAndContentVersion(
+                                c.getId(),c.getSearchVersions().get(index)
+                        );
 
-            }while (!content.isLast());
+                        searchRepository.save(contentHistory.getContent());
+                    });
+
+                }while (!content.isLast());
+            });
 
         });
 

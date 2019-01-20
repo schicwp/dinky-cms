@@ -2,6 +2,7 @@ package org.schicwp.dinky.workflow.hooks;
 
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.search.SearchRepository;
+import org.schicwp.dinky.search.SearchService;
 import org.schicwp.dinky.workflow.ActionHook;
 import org.schicwp.dinky.workflow.ActionHookFactory;
 import org.schicwp.dinky.workflow.ActionHookFactoryService;
@@ -22,7 +23,7 @@ public class AddToSearch implements ActionHookFactory {
 
 
     @Autowired
-    SearchRepository searchRepository;
+    SearchService searchService;
 
     @Override
     public String getName() {
@@ -31,14 +32,19 @@ public class AddToSearch implements ActionHookFactory {
 
     @Override
     public ActionHook createActionHook(Map<String, Object> config) {
+
+        String index = (String)config.getOrDefault("index","default");
+
         return (content, actionConfig) -> {
 
-            logger.info(String.format("Adding [%s] to search index.", content));
+            logger.info(String.format("Adding [%s] to search index [%s]", content,index));
 
-            content.setSearchVersion(content.getVersion());
-            searchRepository.save(content);
+            content.getSearchVersions().put(index,content.getVersion());
 
-            SimpleElasticsearchRepository r;
+            searchService.withIndex(index,searchRepository -> {
+                searchRepository.save(content);
+            });
+
 
         };
     }

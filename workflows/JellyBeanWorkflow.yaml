@@ -12,11 +12,15 @@ actions:
     nextState: InBag
     hooks:
      - name: AddToSearch
+       index: bagIndex
 
   - name: Take
     nextState: InHand
     sourceStates:
      - InBag
+    hooks:
+     - name: RemoveFromSearch
+       index: bagIndex
 
   - name: Eat
     nextState: InMouth

@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by will.schick on 1/4/19.
  */
 @org.springframework.data.mongodb.core.mapping.Document
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "content", type = "contentType")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "#{searchService.currentIndex()}", type = "contentType")
 public class Content {
 
     @Indexed
@@ -38,7 +38,7 @@ public class Content {
     @Indexed
     private String name;
     @Indexed
-    private Integer searchVersion = null;
+    private Map<String,Integer> searchVersions = new HashMap<>();
     private ContentPermissions permissions = new ContentPermissions();
     private ContentMap content = new ContentMap();
 
@@ -133,12 +133,12 @@ public class Content {
         this.owner = owner;
     }
 
-    public Integer getSearchVersion() {
-        return searchVersion;
+    public Map<String, Integer> getSearchVersions() {
+        return searchVersions;
     }
 
-    public void setSearchVersion(Integer searchVersion) {
-        this.searchVersion = searchVersion;
+    public void setSearchVersions(Map<String, Integer> searchVersions) {
+        this.searchVersions = searchVersions;
     }
 
     public ContentPermissions getPermissions() {

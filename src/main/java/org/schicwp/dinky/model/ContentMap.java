@@ -1,5 +1,6 @@
 package org.schicwp.dinky.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 /**
@@ -25,5 +26,9 @@ public class ContentMap extends HashMap<String,Object> {
 
     public ContentMap getAsMap(String key){
         return new ContentMap(this.getAs(key,Map.class));
+    }
+
+    public <T> Collection<T> getAsCollectionOf(String key , Class<T> c){
+        return (Collection<T>)get(key);
     }
 }

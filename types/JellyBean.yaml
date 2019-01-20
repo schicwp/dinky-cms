@@ -4,6 +4,13 @@ workflows:
 fields:
   - name: flavor
     type: String
+    config:
+      maxLength: 10
 
   - name: color
     type: String
+    config:
+      allowedValues:
+        - red
+        - green
+        - blue
