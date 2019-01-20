@@ -1,0 +1,24 @@
+name: JellyBeanWorkflow
+
+states:
+  - name: InBag
+  - name: InHand
+  - name: InMouth
+
+actions:
+
+  - name: PutInBag
+    entryPoint: true
+    nextState: InBag
+    hooks:
+     - name: AddToSearch
+
+  - name: Take
+    nextState: InHand
+    sourceStates:
+     - InBag
+
+  - name: Eat
+    nextState: InMouth
+    sourceStates:
+      - InHand

@@ -1,6 +1,7 @@
 package org.schicwp.dinky.model.type;
 
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,9 +11,10 @@ import java.util.Map;
  */
 public interface FieldType {
 
+    String getName();
 
-    boolean validateSubmission(Object object, Map<String, Object> properties, Collection<String> errors);
+    boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors);
 
-    Object convertSubmission(Object input, Map<String, Object> properties, Content owner);
+    Object convertSubmission(Object input, ContentMap properties, Content owner);
 
 }

@@ -14,7 +14,10 @@ public class ContentSubmission {
     private String type;
     @NotNull
     private String action;
-    private Map<String,Map<String,Object>> workflow = new HashMap<>();
+    @NotNull
+    private String workflow;
+
+    private Map<String,Map<String,Object>> workflowConfig = new HashMap<>();
     private Map<String, Object> content = new HashMap<>();
     private Integer version;
 
@@ -34,13 +37,6 @@ public class ContentSubmission {
         this.content = content;
     }
 
-    public Map<String, Map<String, Object>> getWorkflow() {
-        return workflow;
-    }
-
-    public void setWorkflow(Map<String, Map<String, Object>> workflow) {
-        this.workflow = workflow;
-    }
 
     public Integer getVersion() {
         return version;
@@ -64,5 +60,21 @@ public class ContentSubmission {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getWorkflow() {
+        return workflow;
+    }
+
+    public Map<String, Map<String, Object>> getWorkflowConfig() {
+        return workflowConfig;
+    }
+
+    public void setWorkflow(String workflow) {
+        this.workflow = workflow;
+    }
+
+    public void setWorkflowConfig(Map<String, Map<String, Object>> workflowConfig) {
+        this.workflowConfig = workflowConfig;
     }
 }

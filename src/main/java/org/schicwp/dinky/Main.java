@@ -72,7 +72,7 @@ public class Main {
 
 
            // for (int i = 0; i < 1_000_000; i++)
-            int i = 1;
+            /*int i = 1;
             {
 
 
@@ -80,8 +80,6 @@ public class Main {
                 ContentSubmission contentSubmission = new ContentSubmission();
                 contentSubmission.setAction("Publish");
                 contentSubmission.setType("Concept");
-                contentSubmission.getWorkflow().put("AssignToGroup", Collections.singletonMap("group", "SysAdmins"));
-                contentSubmission.getWorkflow().put("AssignToUser", Collections.singletonMap("user", "will.schick"));
 
                 contentSubmission.getContent().put("title", "Item: " + i);
                 contentSubmission.getContent().put("code", "codely");
@@ -96,7 +94,7 @@ public class Main {
 
                 if (i%1000 == 0)
                     System.out.println((stop-start));
-            }
+            }*/
 
 
 

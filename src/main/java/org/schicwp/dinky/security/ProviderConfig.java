@@ -13,9 +13,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
+
+import java.util.Arrays;
 
 /**
  * Created by will.schick on 1/18/19.
@@ -59,10 +63,16 @@ public class ProviderConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
 
+        authManagerBuilder.inMemoryAuthentication().withUser(new User(
+                "joe",
+                passwordEncoder().encode("bob"),
+                Arrays.asList(new SimpleGrantedAuthority("ARF"))
+        ));
 
 
-        authManagerBuilder.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
-                .userDetailsService(userDetailsService());
+
+       // authManagerBuilder.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
+       //         .userDetailsService(userDetailsService());
 
     }
 
@@ -72,15 +82,6 @@ public class ProviderConfig extends WebSecurityConfigurerAdapter {
         return authenticationManagerBuilder.build();
     }
 
-
-    @Bean
-    public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(AD_DOMAIN, AD_URL);
-        provider.setConvertSubErrorCodesToExceptions(true);
-        provider.setUseAuthenticationRequestCredentials(true);
-
-        return provider;
-    }
 
 
     @Bean

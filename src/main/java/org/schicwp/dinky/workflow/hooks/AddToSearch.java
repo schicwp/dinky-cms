@@ -6,6 +6,7 @@ import org.schicwp.dinky.workflow.ActionHook;
 import org.schicwp.dinky.workflow.ActionHookFactory;
 import org.schicwp.dinky.workflow.ActionHookFactoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -37,6 +38,7 @@ public class AddToSearch implements ActionHookFactory {
             content.setSearchVersion(content.getVersion());
             searchRepository.save(content);
 
+            SimpleElasticsearchRepository r;
 
         };
     }

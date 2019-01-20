@@ -13,8 +13,10 @@ public class ValidationResult {
 
     private Map<String,Collection<String>> fieldErrors = new HashMap<>();
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+
+    public void setErrors(String field, Collection<String> errors){
+        this.valid = false;
+        fieldErrors.put(field,errors);
     }
 
     public Map<String, Collection<String>> getFieldErrors() {

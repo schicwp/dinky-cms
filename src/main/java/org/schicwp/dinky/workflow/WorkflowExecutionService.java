@@ -40,11 +40,18 @@ public class WorkflowExecutionService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    WorkflowService workflowService;
+
     @Transactional
     public Content executeAction( ContentSubmission contentSubmission) {
 
         String id = contentSubmission.getId();
+        String workflow = contentSubmission.getWorkflow();
         ContentType contentType = contentTypeService.getContentType(contentSubmission.getType());
+
+        if (!contentType.getWorkflows().contains(workflow))
+            throw new RuntimeException("Invalid workflow");
 
         Content oldContent;
 
@@ -90,9 +97,12 @@ public class WorkflowExecutionService {
         if (!validate.isValid())
             throw new ValidationException(validate);
 
-
-        Optional<Action> actionOptional = contentType.getWorkflow()
-                .getActionFromState(content.getState(),contentSubmission.getAction());
+        Optional<Action> actionOptional = workflowService
+                .getWorkflow(workflow)
+                .getActionFromState(
+                        content.getState(),
+                        contentSubmission.getAction()
+                );
 
         if (!actionOptional.isPresent())
             throw new RuntimeException("Invalid Action");
@@ -113,13 +123,14 @@ public class WorkflowExecutionService {
             );
 
         content.setState(action.getNextState());
+        content.setWorkflow(workflow);
 
         contentType.convert(content);
 
         action.getActionHooks().forEach((name,hook) -> {
             hook.execute(content,
                     contentSubmission
-                            .getWorkflow()
+                            .getWorkflowConfig()
                             .get(name)
             );
         });

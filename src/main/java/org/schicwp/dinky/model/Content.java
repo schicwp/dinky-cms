@@ -24,6 +24,8 @@ public class Content {
     @Indexed
     private Date modified = new Date();
     @Indexed
+    private String workflow;
+    @Indexed
     private String state;
     @Indexed
     private String type;
@@ -163,11 +165,20 @@ public class Content {
         this.assignedGroup = assignedGroup;
     }
 
+    public String getWorkflow() {
+        return workflow;
+    }
+
+    public void setWorkflow(String workflow) {
+        this.workflow = workflow;
+    }
+
     @Override
     public String toString() {
         return "Content{" +
                 "id='" + id + '\'' +
                 ", version=" + version +
+                ", workflow='" + workflow + '\'' +
                 ", state='" + state + '\'' +
                 ", type='" + type + '\'' +
                 ", name='" + name + '\'' +

@@ -18,12 +18,31 @@ public class SearchService {
     @Autowired
     SearchRepository searchRepository;
 
+    private final ThreadLocal<String> currentIndex = new ThreadLocal<>();
+
     public Page<Content> find(String q, int page, int size) {
 
         return searchRepository.search(
                 QueryBuilders.queryStringQuery(q),
                 PageRequest.of(page, size, Sort.by("modified").descending())
         );
+    }
+
+
+    public Content addToIndex(String name, Content content){
+
+        currentIndex.set(name);
+        Content result = searchRepository.save(content);
+        currentIndex.remove();
+
+        return result;
+    }
+
+
+
+
+    public String currentIndex(){
+        return currentIndex();
     }
 
 }

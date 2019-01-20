@@ -14,22 +14,16 @@ public class ContentType {
 
     private final String name;
     private final Collection<Field> fields;
-    private final Workflow workflow;
+    private final Collection<String> workflows;
     private final String nameField;
 
-    public ContentType(String name, Collection<Field> fields, Workflow workflow, String nameField) {
+    public ContentType(String name, Collection<Field> fields, Collection<String> workflows, String nameField) {
         this.name = name;
         this.fields = fields;
-        this.workflow = workflow;
+        this.workflows = workflows;
         this.nameField = nameField;
-
-        if ( this.fields == null)
-            throw new RuntimeException();
     }
 
-    public Workflow getWorkflow(){
-        return workflow;
-    }
 
     public ValidationResult validate(Content content){
 
@@ -37,18 +31,16 @@ public class ContentType {
 
         for (Field field: fields){
             List<String> fieldErrors = new ArrayList<>();
-            result.getFieldErrors().put(field.getName(),fieldErrors);
+
             if (field.isRequired() && !content.getContent().containsKey(field.getName())) {
                 fieldErrors.add("Required");
-                result.setValid(false);
+                result.setErrors(field.getName(),fieldErrors);
             }
 
             if (content.getContent().containsKey(field.getName())){
 
-
                 if (!field.validateSubmission(content.getContent().get(field.getName()),fieldErrors)) {
-                    result.setValid(false);
-
+                    result.setErrors(field.getName(),fieldErrors);
                 }
             }
         }
@@ -74,7 +66,7 @@ public class ContentType {
             if (content.getContent().containsKey(field.getName())) {
                 content.getContent().put(
                         field.getName(),
-                        field.convertSubmission(content.getContent().get(field.getName()), null, content)
+                        field.convertSubmission(content.getContent().get(field.getName()),  content)
                 );
             }
         }
@@ -92,5 +84,9 @@ public class ContentType {
 
     public String getNameField() {
         return nameField;
+    }
+
+    public Collection<String> getWorkflows() {
+        return workflows;
     }
 }

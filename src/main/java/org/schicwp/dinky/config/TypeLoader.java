@@ -1,9 +1,8 @@
 package org.schicwp.dinky.config;
 
 import org.schicwp.dinky.model.Content;
-import org.schicwp.dinky.model.type.ContentType;
-import org.schicwp.dinky.model.type.ContentTypeService;
-import org.schicwp.dinky.model.type.FieldFactory;
+import org.schicwp.dinky.model.ContentMap;
+import org.schicwp.dinky.model.type.*;
 import org.schicwp.dinky.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -12,6 +11,7 @@ import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -32,13 +32,10 @@ public class TypeLoader {
     ContentTypeService contentTypeService;
 
     @Autowired
-    FieldFactory fieldFactory;
-
-    @Autowired
-    WorkflowService workflowService;
-
-    @Autowired
     MongoOperations mongoOperations;
+
+    @Autowired
+    FieldTypeService fieldTypeService;
 
     String configDir = "./types";
 
@@ -55,19 +52,24 @@ public class TypeLoader {
             try {
 
                 logger.fine("Loading: " + file);
-                Map<String, Object> obj = new Yaml().load(new FileInputStream(file));
+                ContentTypeConfig contentTypeConfig = new Yaml(new Constructor(ContentTypeConfig.class))
+                        .load(new FileInputStream(file));
 
-
-
-                List<Map<String,Object>> fieldConfigs = (List)obj.get("fields");
-
-                String workflow = (String)obj.get("workflow");
-                String name = (String)obj.get("name");
 
                 ContentType contentType = new ContentType(
-                        name, fieldConfigs.stream().map(fieldFactory::createField).collect(Collectors.toList()),
-                        workflowService.getWorkflow(workflow),
-                        (String)obj.get("nameField")
+                        contentTypeConfig.getName(),
+                        contentTypeConfig.getFields()
+                                .stream()
+                                .map(fieldConfig -> new Field(
+                                        fieldTypeService.getFieldType(fieldConfig.getType()),
+                                        fieldConfig.isRequired(),
+                                        fieldConfig.getConfig(),
+                                        fieldConfig.getName(),
+                                        fieldConfig.isIndexed()
+                                ))
+                                .collect(Collectors.toList()),
+                        contentTypeConfig.getWorkflows(),
+                        contentTypeConfig.getNameField()
                 );
 
                 contentType.getFields().forEach(field -> {
@@ -78,8 +80,7 @@ public class TypeLoader {
                     }
                 });
 
-
-                contentTypes.put(name, contentType);
+                contentTypes.put(contentType.getName(), contentType);
 
 
             }catch (Exception e){

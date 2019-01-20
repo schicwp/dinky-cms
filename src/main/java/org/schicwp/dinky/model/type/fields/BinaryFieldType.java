@@ -3,8 +3,8 @@ package org.schicwp.dinky.model.type.fields;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 import org.schicwp.dinky.model.type.FieldType;
-import org.schicwp.dinky.model.type.FieldTypeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,7 +20,7 @@ import java.util.UUID;
  * Created by will.schick on 1/6/19.
  */
 @Component
-public class BinaryFieldTypeFactory implements FieldTypeFactory {
+public class BinaryFieldType implements FieldType {
 
     @Autowired
     GridFsTemplate gridFsTemplate;
@@ -30,21 +30,12 @@ public class BinaryFieldTypeFactory implements FieldTypeFactory {
         return "binary";
     }
 
-    @Override
-    public FieldType createFieldType() {
-        return new BinaryField(gridFsTemplate);
-    }
 
-    public static class BinaryField implements FieldType {
 
-        private final GridFsTemplate gridFsTemplate;
 
-        public BinaryField(GridFsTemplate gridFsTemplate) {
-            this.gridFsTemplate = gridFsTemplate;
-        }
 
         @Override
-        public boolean validateSubmission(Object object, Map<String, Object> properties, Collection<String> errors) {
+        public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
 
             if (object instanceof MultipartFile)
                 return true;
@@ -62,7 +53,7 @@ public class BinaryFieldTypeFactory implements FieldTypeFactory {
         }
 
         @Override
-        public Object convertSubmission(Object input, Map<String, Object> properties, Content content) {
+        public Object convertSubmission(Object input, ContentMap properties, Content content) {
 
             try {
 
@@ -84,5 +75,5 @@ public class BinaryFieldTypeFactory implements FieldTypeFactory {
                 throw new RuntimeException(e);
             }
         }
-    }
+
 }

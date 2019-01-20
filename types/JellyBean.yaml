@@ -1,0 +1,9 @@
+name: JellyBean
+workflows:
+  - JellyBeanWorkflow
+fields:
+  - name: flavor
+    type: String
+
+  - name: color
+    type: String

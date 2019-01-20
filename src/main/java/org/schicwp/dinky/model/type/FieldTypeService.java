@@ -1,6 +1,5 @@
 package org.schicwp.dinky.model.type;
 
-import org.schicwp.dinky.workflow.ActionHookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -14,19 +13,19 @@ import java.util.logging.Logger;
  * Created by will.schick on 1/6/19.
  */
 @Service
-public class FieldTypeFactoryService {
+public class FieldTypeService {
 
-    private static final Logger logger = Logger.getLogger(FieldTypeFactoryService.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(FieldTypeService.class.getCanonicalName());
 
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    Map<String,FieldTypeFactory> fieldTypeFactoryHashMap = new HashMap<>();
+    Map<String,FieldType> fieldTypeFactoryHashMap = new HashMap<>();
 
     @PostConstruct
     public void init(){
-        applicationContext.getBeansOfType(FieldTypeFactory.class).forEach((k,f)->{
+        applicationContext.getBeansOfType(FieldType.class).forEach((k,f)->{
 
             logger.info("Registering FieldType: " + f.getName());
 
@@ -34,7 +33,7 @@ public class FieldTypeFactoryService {
         });
     }
 
-    public FieldTypeFactory getFieldTypeFactory(String name){
+    public FieldType getFieldType(String name){
 
         if (!fieldTypeFactoryHashMap.containsKey(name.toLowerCase()))
             throw new IllegalArgumentException("Unkown field type: " + name);
