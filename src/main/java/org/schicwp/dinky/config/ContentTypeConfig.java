@@ -1,6 +1,5 @@
 package org.schicwp.dinky.config;
 
-import org.schicwp.dinky.model.type.Field;
 
 import java.util.Collection;
 import java.util.List;

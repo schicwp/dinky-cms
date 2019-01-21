@@ -1,6 +1,5 @@
 package org.schicwp.dinky.workflow;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -9,9 +8,15 @@ import java.util.Optional;
  */
 public class Workflow{
 
-    String name;
-    Collection<State> states = new ArrayList<>();
-    Collection<Action> actions = new ArrayList<>();
+    private final String name;
+    private final Collection<State> states;
+    private final Collection<Action> actions;
+
+    public Workflow(String name, Collection<State> states, Collection<Action> actions) {
+        this.name = name;
+        this.states = states;
+        this.actions = actions;
+    }
 
     public Optional<Action> getActionFromState(String state, String action){
         if (state == null)
@@ -36,24 +41,12 @@ public class Workflow{
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Collection<State> getStates() {
         return states;
     }
-
-    public void setStates(Collection<State> states) {
-        this.states = states;
-    }
-
 
     public Collection<Action> getActions() {
         return actions;
     }
 
-    public void setActions(Collection<Action> actions) {
-        this.actions = actions;
-    }
 }

@@ -1,9 +1,8 @@
-package org.schicwp.dinky.config;
+package org.schicwp.dinky.config.loader;
 
+import org.schicwp.dinky.config.ContentTypeConfig;
 import org.schicwp.dinky.model.Content;
-import org.schicwp.dinky.model.ContentMap;
 import org.schicwp.dinky.model.type.*;
-import org.schicwp.dinky.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -56,29 +55,7 @@ public class TypeLoader {
                         .load(new FileInputStream(file));
 
 
-                ContentType contentType = new ContentType(
-                        contentTypeConfig.getName(),
-                        contentTypeConfig.getFields()
-                                .stream()
-                                .map(fieldConfig -> new Field(
-                                        fieldTypeService.getFieldType(fieldConfig.getType()),
-                                        fieldConfig.isRequired(),
-                                        fieldConfig.getConfig(),
-                                        fieldConfig.getName(),
-                                        fieldConfig.isIndexed()
-                                ))
-                                .collect(Collectors.toList()),
-                        contentTypeConfig.getWorkflows(),
-                        contentTypeConfig.getNameField()
-                );
-
-                contentType.getFields().forEach(field -> {
-                    if (field.isIndexed()){
-                        logger.fine("Creating index 'content." + field.getName() + "'");
-                        mongoOperations.indexOps(Content.class).
-                                ensureIndex(new Index().on("content." + field.getName(), Sort.Direction.ASC));
-                    }
-                });
+                ContentType contentType = convertContentTypeConfigToContentType(contentTypeConfig);
 
                 contentTypes.put(contentType.getName(), contentType);
 
@@ -98,7 +75,32 @@ public class TypeLoader {
 
     }
 
+    private ContentType convertContentTypeConfigToContentType(ContentTypeConfig contentTypeConfig) {
+        ContentType contentType = new ContentType(
+                contentTypeConfig.getName(),
+                contentTypeConfig.getFields()
+                        .stream()
+                        .map(fieldConfig -> new Field(
+                                fieldTypeService.getFieldType(fieldConfig.getType()),
+                                fieldConfig.isRequired(),
+                                fieldConfig.getConfig(),
+                                fieldConfig.getName(),
+                                fieldConfig.isIndexed()
+                        ))
+                        .collect(Collectors.toList()),
+                contentTypeConfig.getWorkflows(),
+                contentTypeConfig.getNameField()
+        );
 
+        contentType.getFields().forEach(field -> {
+            if (field.isIndexed()){
+                logger.fine("Creating index 'content." + field.getName() + "'");
+                mongoOperations.indexOps(Content.class).
+                        ensureIndex(new Index().on("content." + field.getName(), Sort.Direction.ASC));
+            }
+        });
+        return contentType;
+    }
 
 
 }

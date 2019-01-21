@@ -1,44 +1,20 @@
-package org.schicwp.dinky.workflow;
+package org.schicwp.dinky.config;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by will.schick on 1/4/19.
  */
-public class Action {
-
-
-    /*
-    name: Publish
-    entryPoint: true
-    nextState: Published
-    sourceStates:
-     - Draft
-     - Published
-    allowedGroups:
-     - Editor
-     */
+public class ActionConfig {
 
     private String name;
     private boolean entryPoint = false;
     private String nextState;
     private Collection<String> sourceStates = new ArrayList<>();
     private Collection<String> allowedGroups = new ArrayList<>();
-    private Map<String,ActionHook> actionHooks = new HashMap<>();
+    private Collection<ActionHookConfig> hooks = new ArrayList<>();
 
-    public Action(String name,
-                  boolean entryPoint,
-                  String nextState,
-                  Collection<String> sourceStates,
-                  Collection<String> allowedGroups,
-                  Map<String, ActionHook> actionHooks) {
-        this.name = name;
-        this.entryPoint = entryPoint;
-        this.nextState = nextState;
-        this.sourceStates = sourceStates;
-        this.allowedGroups = allowedGroups;
-        this.actionHooks = actionHooks;
-    }
 
     public String getName() {
         return name;
@@ -80,12 +56,11 @@ public class Action {
         this.allowedGroups = allowedGroups;
     }
 
-    public Map<String, ActionHook> getActionHooks() {
-        return actionHooks;
+    public Collection<ActionHookConfig> getHooks() {
+        return hooks;
     }
 
-    public void setActionHooks(Map<String, ActionHook> actionHooks) {
-        this.actionHooks = actionHooks;
+    public void setHooks(Collection<ActionHookConfig> hooks) {
+        this.hooks = hooks;
     }
-
 }

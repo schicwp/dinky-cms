@@ -21,60 +21,15 @@ public class WorkflowService {
 
     private static final Logger logger = Logger.getLogger(WorkflowService.class.getCanonicalName());
 
-    String configDir = "workflows";
-
-    Map<String,Workflow> workflows = null;
-
-    @Autowired
-    ActionHookFactoryService actionHookFactoryService;
+    private Map<String,Workflow> workflows = null;
 
     public synchronized Workflow getWorkflow(String name){
-        if (workflows == null)
-            this.init();
-
         return workflows.get(name);
     }
 
-    @PostConstruct
-    public synchronized void init(){
-
-
-        logger.info("Loading workflows");
-
-        Map<String,Workflow> workflows = new HashMap<>();
-
-        Arrays.asList(new File(configDir).listFiles()).forEach(file->{
-
-            try {
-
-                logger.info("Loading: " + file);
-                Workflow workflow = new Yaml(new Constructor(Workflow.class))
-                        .load(new FileInputStream(file));
-
-                workflow.getActions().forEach(action -> {
-                    action.getHooks().forEach( hookConfig->{
-
-                        String name = (String)hookConfig.get("name");
-
-                        action.getActionHooks().put(
-                                name,
-                                actionHookFactoryService.getActionHook(name).createActionHook(hookConfig)
-                        );
-                    });
-                });
-
-
-                workflows.put(workflow.getName(),workflow);
-
-
-            }catch (Exception e){
-                throw new RuntimeException(e);
-            }
-
-        });
-
-        logger.info("Workflows: " + workflows);
-
+    public synchronized void setWorkflows(Map<String, Workflow> workflows) {
         this.workflows = workflows;
     }
+
+
 }
