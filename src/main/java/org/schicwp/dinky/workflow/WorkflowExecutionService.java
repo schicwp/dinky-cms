@@ -29,7 +29,7 @@ public class WorkflowExecutionService {
 
 
     @Autowired
-    ContentService contentRepository;
+    ContentService contentService;
 
     @Autowired
     ContentTypeService contentTypeService;
@@ -48,6 +48,7 @@ public class WorkflowExecutionService {
 
         String id = contentSubmission.getId();
         String workflow = contentSubmission.getWorkflow();
+
         ContentType contentType = contentTypeService.getContentType(contentSubmission.getType());
 
         if (!contentType.getWorkflows().contains(workflow))
@@ -57,7 +58,7 @@ public class WorkflowExecutionService {
 
         if (id != null) {
 
-            Optional<Content> contentOptional = contentRepository
+            Optional<Content> contentOptional = contentService
                     .findById(id);
 
             if (contentOptional.isPresent() && !permissionService.allowWrite(contentOptional.get()))
@@ -70,10 +71,7 @@ public class WorkflowExecutionService {
                             contentSubmission.getType())
             );
 
-            if (contentSubmission.getVersion() != null &&
-                    oldVersion.getVersion() != contentSubmission.getVersion()){
-                throw new OptimisticLockingException();
-            }
+            System.out.println(oldVersion);
 
             oldContent = oldVersion;
 
@@ -83,6 +81,11 @@ public class WorkflowExecutionService {
                     authService.getCurrentUser().getUsername(),
                     contentSubmission.getType()
             );
+        }
+
+        if (contentSubmission.getVersion() != null &&
+                oldContent.getVersion() != contentSubmission.getVersion()){
+            throw new OptimisticLockingException();
         }
 
         Content content = oldContent.merge(contentSubmission.getContent());
@@ -135,7 +138,7 @@ public class WorkflowExecutionService {
             );
         });
 
-        return contentRepository.save(content);
+        return contentService.save(content);
 
 
 
