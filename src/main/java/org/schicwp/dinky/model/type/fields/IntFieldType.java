@@ -17,23 +17,41 @@ public class IntFieldType implements FieldType {
 
     @Override
     public String getName() {
-        return "int";
+        return "Int";
     }
 
 
-        @Override
-        public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
-            if (!Integer.class.isAssignableFrom(object.getClass())) {
-                errors.add("Should be integer");
-                return false;
-            }
-
+    @Override
+    public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
+        if (object == null)
             return true;
+
+        if (!Integer.class.isAssignableFrom(object.getClass())) {
+            errors.add("Should be integer");
+            return false;
         }
 
-        @Override
-        public Object convertSubmission(Object input, ContentMap properties, Content content) {
-            return (Integer) input;
+        int value = (Integer) object;
+
+        int min = properties.getAsOrDefault("min", Integer.MIN_VALUE);
+        int max = properties.getAsOrDefault("max", Integer.MAX_VALUE);
+
+        if (value > max) {
+            errors.add("value above max");
+            return false;
         }
+
+        if (value < min) {
+            errors.add("value below min");
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Object convertSubmission(Object input, ContentMap properties, Content content) {
+        return input;
+    }
 
 }

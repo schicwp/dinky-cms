@@ -1,5 +1,6 @@
 package org.schicwp.dinky.model.type.fields
 
+import org.schicwp.dinky.model.Content
 import org.schicwp.dinky.model.ContentMap
 import spock.lang.Specification
 
@@ -75,6 +76,15 @@ class StringFieldTypeSpec extends Specification{
         "arf"           |   ["ruff","meow"]             |   false
         "arf"           |    ["ruff","arf"]             |   true
 
+    }
+
+    void "convertSubmission should return input"(){
+        given:
+        "an input"
+        def o = new Object();
+
+        expect:
+        o.is(stringFieldType.convertSubmission(o,new ContentMap(),new Content()))
     }
 
 

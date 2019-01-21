@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by will.schick on 1/6/19.
@@ -21,36 +20,37 @@ public class ObjectRefFieldType implements FieldType {
 
     @Override
     public String getName() {
-        return "objectRef";
+        return "ObjectRef";
     }
 
 
-        @Override
-        public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
+    @Override
+    public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
 
-            Content referencedContent = mongoTemplate.findById(object,Content.class);
-
-            if (referencedContent == null) {
-                errors.add("Cannot find referenced object");
-                return false;
-
-            }
-
-            if ( properties.containsKey("referencedType") ) {
-                if (!properties.get("referencedType").toString().equalsIgnoreCase(referencedContent.getType())){
-                    errors.add("Referenced object is wrong type");
-                    return false;
-                }
-            }
-
+        if (object == null)
             return true;
+
+        Content referencedContent = mongoTemplate.findById(object, Content.class);
+
+        if (referencedContent == null) {
+            errors.add("Cannot find referenced object");
+            return false;
+
         }
 
-        @Override
-        public Object convertSubmission(Object input, ContentMap properties, Content content) {
-
-
-            return input;
+        if (properties.containsKey("referencedType")) {
+            if (!properties.get("referencedType").toString().equalsIgnoreCase(referencedContent.getType())) {
+                errors.add("Referenced object is wrong type");
+                return false;
+            }
         }
+
+        return true;
+    }
+
+    @Override
+    public Object convertSubmission(Object input, ContentMap properties, Content content) {
+        return input;
+    }
 
 }

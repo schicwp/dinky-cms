@@ -18,7 +18,7 @@ public class DateFieldType implements FieldType {
 
     @Override
     public String getName() {
-        return "date";
+        return "Date";
     }
 
 

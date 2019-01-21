@@ -26,53 +26,59 @@ public class BinaryFieldType implements FieldType {
 
     @Override
     public String getName() {
-        return "binary";
+        return "Binary";
     }
 
 
+    @Override
+    public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
 
+        if (object == null)
+            return true;
 
+        if (object instanceof MultipartFile)
+            return true;
 
-        @Override
-        public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
+        if (object instanceof String) {
+            String id = (String) object;
 
-            if (object instanceof MultipartFile)
-                return true;
-
-            if (object instanceof String){
-                String id = (String)object;
-
-                if (gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(id))) == null){
-                    errors.add("Value is not a file id");
-                    return false;
-                }
-            }
-
-            return (object instanceof MultipartFile);
-        }
-
-        @Override
-        public Object convertSubmission(Object input, ContentMap properties, Content content) {
-
-            try {
-
-                MultipartFile multipartFile = (MultipartFile) input;
-
-                DBObject metaData = new BasicDBObject();
-                metaData.put("contentType",multipartFile.getContentType());
-                metaData.put("filename",multipartFile.getOriginalFilename());
-                metaData.put("contentId",content.getId());
-
-                return gridFsTemplate.store(
-                        multipartFile.getInputStream(),
-                        UUID.randomUUID().toString(),
-                        multipartFile.getContentType(),
-                        metaData
-                ).toString();
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(id))) == null) {
+                errors.add("Value is not a file id");
+                return false;
             }
         }
+
+        return true;
+    }
+
+    @Override
+    public Object convertSubmission(Object input, ContentMap properties, Content content) {
+
+        if (input == null)
+            return null;
+
+        if (input instanceof String)
+            return input;
+
+        try {
+
+            MultipartFile multipartFile = (MultipartFile) input;
+
+            DBObject metaData = new BasicDBObject();
+            metaData.put("contentType", multipartFile.getContentType());
+            metaData.put("filename", multipartFile.getOriginalFilename());
+            metaData.put("contentId", content.getId());
+
+            return gridFsTemplate.store(
+                    multipartFile.getInputStream(),
+                    UUID.randomUUID().toString(),
+                    multipartFile.getContentType(),
+                    metaData
+            ).toString();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

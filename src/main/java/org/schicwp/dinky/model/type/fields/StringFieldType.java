@@ -12,7 +12,7 @@ import java.util.Collection;
  */
 
 @Component
-public class StringFieldType implements FieldType{
+public class StringFieldType implements FieldType {
 
 
     @Override
@@ -21,53 +21,52 @@ public class StringFieldType implements FieldType{
     }
 
 
-        @Override
-        public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
+    @Override
+    public boolean validateSubmission(Object object, ContentMap properties, Collection<String> errors) {
 
-            if (object == null)
-                return true;
-
-            if (!(object instanceof String)) {
-                errors.add("Wrong type, expected String");
-                return false;
-            }
-
-            String value = (String) object;
-
-            if (properties.containsKey("regex") &&
-                    !value.matches(properties.getAs("regex",String.class))) {
-                errors.add("Regex failed");
-                return false;
-            }
-
-            if (properties.containsKey("minLength") &&
-                    value.length()
-                            < properties.getAs("minLength",Integer.class)) {
-                errors.add("Does not meet minLength");
-                return false;
-            }
-
-            if (properties.containsKey("maxLength") &&
-                    value.length()
-                            > properties.getAs("maxLength",Integer.class)) {
-                errors.add("Above maxLength");
-                return false;
-            }
-
-            if (properties.containsKey("allowedValues") &&
-                    !properties
-                        .getAsCollectionOf("allowedValues",String.class)
-                        .contains(value)) {
-                errors.add("Not in allowed values");
-                return false;
-            }
-
+        if (object == null)
             return true;
+
+        if (!(object instanceof String)) {
+            errors.add("Wrong type, expected String");
+            return false;
         }
 
-        @Override
-        public Object convertSubmission(Object input, ContentMap properties, Content content) {
-            return (String) input;
+        String value = (String) object;
+        if (properties.containsKey("regex") &&
+                !value.matches(properties.getAs("regex", String.class))) {
+            errors.add("Regex failed");
+            return false;
         }
+
+        if (properties.containsKey("minLength") &&
+                value.length()
+                        < properties.getAs("minLength", Integer.class)) {
+            errors.add("Does not meet minLength");
+            return false;
+        }
+
+        if (properties.containsKey("maxLength") &&
+                value.length()
+                        > properties.getAs("maxLength", Integer.class)) {
+            errors.add("Above maxLength");
+            return false;
+        }
+
+        if (properties.containsKey("allowedValues") &&
+                !properties
+                        .getAsCollectionOf("allowedValues", String.class)
+                        .contains(value)) {
+            errors.add("Not in allowed values");
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Object convertSubmission(Object input, ContentMap properties, Content content) {
+        return input;
+    }
 
 }
