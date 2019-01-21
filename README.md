@@ -48,12 +48,18 @@ actions:
   - name: PutInBag
     entryPoint: true
     nextState: InBag
-    
+    hooks:
+     - name: AddToSearch 
+       index: bagindex
+
   - name: Take
     nextState: InHand
     sourceStates:
      - InBag
-    
+    hooks:
+     - name: RemoveFromSearch
+       index: bagindex
+
   - name: Eat
     nextState: InMouth
     sourceStates:
@@ -328,7 +334,7 @@ async workflow actions which don't have a security context associated with them.
 
         Objcet thing = authService.withSystemUser(()->{
           
-	  return contentService.find(...);
+	        return contentService.find(...);
 
         });
 
@@ -346,9 +352,9 @@ Search is provided by [elasticsearch]().
 
 This can be done via the _search_ endpoint, using the **q** parameter:
 
-    GET /api/v1/search?q=content.color:red
+    GET /api/v1/search/myindex?q=content.color:red
     
-    GET /api/v1/search?q=content.color:red AND content.flavor:cinnamon
+    GET /api/v1/search/myindex?q=content.color:red AND content.flavor:cinnamon
     
 This uses elasticsearch [query string](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html)
 syntax.
