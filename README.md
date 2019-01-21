@@ -70,13 +70,21 @@ will use.
 
 ```yaml
 name: JellyBean
-workflow: JellyBeanWorkflow
+workflows:
+  - JellyBeanWorkflow
 fields:
   - name: flavor
     type: String
+    config:
+      maxLength: 10
 
   - name: color
     type: String
+    config:
+      allowedValues:
+        - red
+        - green
+        - blue
 
 ```
 
@@ -88,7 +96,7 @@ POST /api/v1/content
 
 ```json
 {
-
+    "workflow":"JellyBeanWorkflow",
 	"action":"PutInBag",
 	"type":"JellyBean",
 	"content":{
@@ -106,7 +114,7 @@ Can now be found by type listing:
     
 OR by type and state listing:
 
-    GET /api/v1/content?type=JellyBean&state=InBag
+    GET /api/v1/content?type=JellyBean&workflow=JellyBeanWorkflowstate=InBag
     
 OR id:
 
@@ -115,41 +123,83 @@ OR id:
     
 ```json
 {
-    "id": "AWgkUMg4ugnMqnnx65us",
+    "id": "3085b75a-44bf-4b1e-8286-1af288a036e0",
     "version": 1,
-    "created": "2019-01-06T17:58:20.470+0000",
-    "modified": "2019-01-06T17:58:20.470+0000",
+    "created": "2019-01-21T01:37:12.357+0000",
+    "modified": "2019-01-21T01:37:12.357+0000",
+    "workflow": "JellyBeanWorkflow",
     "state": "InBag",
     "type": "JellyBean",
-    "owner": "bob",
+    "owner": "joe",
+    "assignedUser": null,
+    "assignedGroup": null,
+    "name": null,
+    "searchVersions": {
+        "bagIndex": 1
+    },
     "permissions": {
-    	"owner":{
-		"read":true,
-		"write": true
-	},
-	"group":{},
-	"other":{
-		"read":false,
-		"write": false
-	}
+        "owner": {
+            "read": true,
+            "write": true
+        },
+        "assignee": {
+            "read": true,
+            "write": true
+        },
+        "other": {
+            "read": false,
+            "write": false
+        },
+        "group": {}
     },
     "content": {
-        "flavor":"cinnamon",
-        "color": "red"	
+        "flavor": "cherryred",
+        "color": "red"
     }
-},
+}
 ```
 ## Content Fields
 
 Content types are composed of fields.
 
+A field needs a "name" and "type" and can be "indexed" or "required". Each type of field can
+have custom options, in a yaml map called _config_. 
+
+```yaml
+  - name: flavor
+    type: String
+    required: true
+    indexed: true
+    config:
+      maxLength: 10
+
+
+```
+
 ### String
 
 Holds a string.
 
+_Config options:_
+
+| param             | description                               |
+| ----              | ----                                      |
+| regex             | a regex to validate the string            |
+| allowedValues     | a list of values that the string may be   |
+| minLength         | the min length of the string              |
+| maxLength         | max length of the string                  |
+
 ### Int
 
 Holds an integer.
+
+_Config options:_
+
+| param             | description                               |
+| ----              | ----                                      |
+| min               | min value                                 |
+| max               | max value                                 |
+
 
 ### Date
 
@@ -163,9 +213,36 @@ Holds a binary file - this can be used for images, attachments, etc.
 
 This contains a collection of other items. The items it contains can be any other field type.
 
+_Config options:_
+
+| param             | description                               |
+| ----              | ----                                      |
+| collectionType (required)             | a field configuration which defines the type of items in the collection         |
+
+_Example:_
+
+```yaml
+  - name: collectionOfStuff
+    type: Collection
+    config:
+      collectionType:
+        type: String
+        config:
+          maxLength: 49
+          minLength: 20
+          regex: "[a-z]*"
+          
+```
+
+
 ### ObjectRef
 
 A reference to another content object, by id. 
+
+| param             | description                                                                                               |
+| ----              | ----                                      |
+| referencedType (optional)             | the type of object referenced. If not there, any type of object can be referenced     |
+
 
 
 ## Action Hooks

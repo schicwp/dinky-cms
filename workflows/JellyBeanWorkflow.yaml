@@ -12,7 +12,7 @@ actions:
     nextState: InBag
     hooks:
      - name: AddToSearch
-       index: bagIndex
+       index: bagindex
 
   - name: Take
     nextState: InHand
@@ -20,7 +20,7 @@ actions:
      - InBag
     hooks:
      - name: RemoveFromSearch
-       index: bagIndex
+       index: bagindex
 
   - name: Eat
     nextState: InMouth
