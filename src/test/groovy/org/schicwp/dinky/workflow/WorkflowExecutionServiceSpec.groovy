@@ -1,4 +1,4 @@
-package org.schicwp.dinky
+package org.schicwp.dinky.workflow
 
 import org.schicwp.dinky.api.dto.ContentSubmission
 import org.schicwp.dinky.auth.AuthService
@@ -12,11 +12,6 @@ import org.schicwp.dinky.model.ContentMap
 import org.schicwp.dinky.model.type.ContentType
 import org.schicwp.dinky.model.type.ContentTypeService
 import org.schicwp.dinky.model.type.ValidationResult
-import org.schicwp.dinky.workflow.Action
-import org.schicwp.dinky.workflow.ActionHook
-import org.schicwp.dinky.workflow.Workflow
-import org.schicwp.dinky.workflow.WorkflowExecutionService
-import org.schicwp.dinky.workflow.WorkflowService
 import spock.lang.Specification
 
 /**
@@ -341,8 +336,12 @@ class WorkflowExecutionServiceSpec extends Specification {
         and:
         "an action"
         Action action = new Action(
-                nextState: "NewState",
-                actionHooks: [:]
+                "test",
+                false,
+                 "NewState",
+                [],
+                [],
+                 [:]
         )
 
         when:
@@ -443,8 +442,12 @@ class WorkflowExecutionServiceSpec extends Specification {
         and:
         "an action"
         Action action = new Action(
-                nextState: "NewState",
-                actionHooks: [
+                "test",
+                false,
+                "NewState",
+                [],
+                [],
+                [
                         testHook:actionHook
                 ]
         )
@@ -460,9 +463,9 @@ class WorkflowExecutionServiceSpec extends Specification {
                         action: "PutInNewState",
                         content: contentMap,
                         workflowConfig: [
-                                testHook: [
+                                testHook: new ContentMap( [
                                         ruff:"meow"
-                                ]
+                                ])
                         ]
                 )
         )

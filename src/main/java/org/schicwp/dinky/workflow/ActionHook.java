@@ -1,6 +1,7 @@
 package org.schicwp.dinky.workflow;
 
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 
 import java.util.Map;
 
@@ -9,5 +10,5 @@ import java.util.Map;
  */
 public interface ActionHook {
 
-    public void execute(Content content, Map<String,Object> actionConfig);
+    public void execute(Content content, ContentMap actionConfig);
 }

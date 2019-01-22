@@ -1,5 +1,7 @@
 package org.schicwp.dinky.api.dto;
 
+import org.schicwp.dinky.model.ContentMap;
+
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,7 @@ public class ContentSubmission {
     @NotNull
     private String workflow;
 
-    private Map<String,Map<String,Object>> workflowConfig = new HashMap<>();
+    private Map<String,ContentMap> workflowConfig = new HashMap<>();
     private Map<String, Object> content = new HashMap<>();
     private Integer version;
 
@@ -66,7 +68,7 @@ public class ContentSubmission {
         return workflow;
     }
 
-    public Map<String, Map<String, Object>> getWorkflowConfig() {
+    public Map<String, ContentMap> getWorkflowConfig() {
         return workflowConfig;
     }
 
@@ -74,7 +76,7 @@ public class ContentSubmission {
         this.workflow = workflow;
     }
 
-    public void setWorkflowConfig(Map<String, Map<String, Object>> workflowConfig) {
+    public void setWorkflowConfig(Map<String, ContentMap> workflowConfig) {
         this.workflowConfig = workflowConfig;
     }
 }

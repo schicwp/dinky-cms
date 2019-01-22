@@ -1,6 +1,7 @@
 package org.schicwp.dinky.workflow.hooks;
 
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 import org.schicwp.dinky.search.SearchRepository;
 import org.schicwp.dinky.search.SearchService;
 import org.schicwp.dinky.workflow.ActionHook;
@@ -31,7 +32,7 @@ public class AddToSearch implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, Object> config) {
+    public ActionHook createActionHook(ContentMap config) {
 
         String index = (String)config.getOrDefault("index","default");
 

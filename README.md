@@ -260,20 +260,75 @@ actions:
     nextState: InBag
     #use hooks to let friends have beans as well
     hooks:
-     - name: AssignToGroup
-       group: friends
+     - name: Assign
+       config:
+        group: friends
      - name: SetPermissions
-       group: rw
+       config:
+        group: 
+          read: true
+          write: true
 ```
  
-Standard hooks below:
- 
-  Name              |  Description                          | Config Parameters              | User Parameters  
- ---                | ---                                   | ---                            | ---                     
- AssignToUser       |  Assigns the owner of the content     | user                           | user             
- SetPermissions     |  Sets the permissions of the content  | owner <br/> group <br/> other  | owner <br/> group <br/> other 
- AddToSearch        |  Adds the content to the search       |                                | 
- RemoveFromSearch   |  Removes the content from the search  |                                | 
+### Built In Hook Reference
+
+#### Assign
+
+This assigns the content to a user and/or group by setting the _assignedUser_ and _assignedGroup_ fields. 
+
+```yaml
+- name: Assign
+  config:
+    group: friends
+    user: joe
+```
+
+#### SetPermissions
+
+This sets the permissions of the content. 
+
+Permissions can be set for the _owner_, _assignee_, _other (anyone else)_ or a set of _groups_
+
+```yaml
+- name: SetPermissions
+  config:
+    owner:
+      read: true
+      write: true
+    assignee:
+      read: true
+      write: true
+    other:
+      read: true
+      write: false
+    group:
+      friends:
+        read: true
+        write: false
+```
+
+#### AddToSearch
+
+Adds the content to a search index. The search index can be specified in the _index_ parameter. If not specified, it 
+will be added to an index called "default".
+
+```yaml
+- name: AddToSearch
+  config:
+    index: myindex
+```
+
+#### RemoveFromSearch
+
+Removes the content from a search index. The search index can be specified in the _index_ parameter. If not specified, it 
+will be removed from an index called "default".
+
+```yaml
+- name: RemoveFromSearch
+  config:
+    index: myindex
+```
+                          | 
  
 ### Adding Action Hooks for Custom Business
 

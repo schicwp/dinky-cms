@@ -1,5 +1,7 @@
 package org.schicwp.dinky.workflow;
 
+import org.schicwp.dinky.model.ContentMap;
+
 import java.util.Map;
 
 /**
@@ -9,5 +11,5 @@ public interface ActionHookFactory {
 
     String getName();
 
-    ActionHook createActionHook(Map<String,Object> config);
+    ActionHook createActionHook(ContentMap config);
 }

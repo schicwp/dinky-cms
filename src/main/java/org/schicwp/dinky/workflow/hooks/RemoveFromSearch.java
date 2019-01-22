@@ -1,7 +1,9 @@
 package org.schicwp.dinky.workflow.hooks;
 
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 import org.schicwp.dinky.search.SearchRepository;
+import org.schicwp.dinky.search.SearchService;
 import org.schicwp.dinky.workflow.ActionHook;
 import org.schicwp.dinky.workflow.ActionHookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ public class RemoveFromSearch implements ActionHookFactory {
 
 
     @Autowired
-    SearchRepository searchRepository;
+    SearchService searchService;
 
     @Override
     public String getName() {
@@ -29,7 +31,7 @@ public class RemoveFromSearch implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, Object> config) {
+    public ActionHook createActionHook(ContentMap config) {
 
         String index = (String)config.getOrDefault("index","default");
 
@@ -37,11 +39,16 @@ public class RemoveFromSearch implements ActionHookFactory {
         return (content, actionConfig) -> {
             logger.info(String.format("Removing [%s] from search index.", content));
 
-            Optional<Content> saved =
-                    searchRepository.findById(content.getId());
 
-            saved.ifPresent(searchRepository::delete);
-            content.getSearchVersions().remove(index);
+            searchService.withIndex(index,searchRepository -> {
+
+                searchRepository
+                        .findById(content.getId())
+                        .ifPresent(searchRepository::delete);
+
+                content.getSearchVersions().remove(index);
+            });
+
 
         };
     }

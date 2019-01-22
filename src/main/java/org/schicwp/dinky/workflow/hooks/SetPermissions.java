@@ -1,6 +1,7 @@
 package org.schicwp.dinky.workflow.hooks;
 
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 import org.schicwp.dinky.model.Permission;
 import org.schicwp.dinky.workflow.ActionHook;
 import org.schicwp.dinky.workflow.ActionHookFactory;
@@ -23,23 +24,42 @@ public class SetPermissions implements ActionHookFactory {
     }
 
     @Override
-    public ActionHook createActionHook(Map<String, Object> config) {
-
-
-        Permission owner = fromObject(config.get("owner"));
-
-        Map<String,Permission> group = fromMap(  config.get("group"));
+    public ActionHook createActionHook(ContentMap config) {
 
         return (content, actionConfig) -> {
 
-            Permission _owner = fromObject(config.get("owner"));
+            Permission _owner = fromObject(
+                    actionConfig.getOrDefault(
+                            "owner",
+                            config.getOrDefault("owner",null)
+                    )
+            );
 
-            Map<String,Permission> _group = fromMap(  config.get("group"));
+            Permission _other = fromObject(
+                    actionConfig.getOrDefault(
+                            "other",
+                            config.getOrDefault("other",null)
+                    )
+            );
+
+            Permission _assignee = fromObject(
+                    actionConfig.getOrDefault(
+                            "assignee",
+                            config.getOrDefault("assignee",null)
+                    )
+            );
 
             if (_owner != null)
                 content.getPermissions().setOwner(_owner);
-            else if (owner != null)
-                content.getPermissions().setOwner(owner);
+            if (_other != null)
+                content.getPermissions().setOther(_other);
+            if (_assignee != null)
+                content.getPermissions().setAssignee(_assignee);
+
+
+            Map<String,Permission> group = fromMap(  config.get("group"));
+            Map<String,Permission> _group = fromMap(  actionConfig.get("group"));
+
 
             group.forEach((s, permission) -> content.getPermissions().getGroup().put(s,permission));
             _group.forEach((s, permission) -> content.getPermissions().getGroup().put(s,permission));
@@ -55,7 +75,8 @@ public class SetPermissions implements ActionHookFactory {
 
         Map<String,Permission> group = new HashMap<>();
 
-        if (group != null){
+
+        if (groupConfig != null){
             groupConfig.forEach( (k, v)-> group.put(k,fromObject(v)));
         }
 
