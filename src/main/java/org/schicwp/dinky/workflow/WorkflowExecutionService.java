@@ -6,6 +6,7 @@ import org.schicwp.dinky.content.PermissionService;
 import org.schicwp.dinky.exceptions.OptimisticLockingException;
 import org.schicwp.dinky.exceptions.PermissionException;
 import org.schicwp.dinky.model.Content;
+import org.schicwp.dinky.model.ContentMap;
 import org.schicwp.dinky.model.type.ContentType;
 import org.schicwp.dinky.model.type.ContentTypeService;
 import org.schicwp.dinky.exceptions.ValidationException;
@@ -134,7 +135,7 @@ public class WorkflowExecutionService {
             hook.execute(content,
                     contentSubmission
                             .getWorkflowConfig()
-                            .get(name)
+                            .getOrDefault(name,new ContentMap())
             );
         });
 
