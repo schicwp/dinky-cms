@@ -52,6 +52,10 @@ public class WorkflowExecutionService {
 
         ContentType contentType = contentTypeService.getContentType(contentSubmission.getType());
 
+        if (workflow == null && contentType.getWorkflows().size() == 1)
+            workflow = contentType.getWorkflows().iterator().next();
+
+
         if (!contentType.getWorkflows().contains(workflow))
             throw new RuntimeException("Invalid workflow");
 
