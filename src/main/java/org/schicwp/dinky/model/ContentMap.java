@@ -25,7 +25,15 @@ public class ContentMap extends HashMap<String,Object> {
 
 
     public ContentMap getAsMap(String key){
-        return new ContentMap(this.getAs(key,Map.class));
+        if (this.containsKey(key))
+            return new ContentMap(this.getAs(key,Map.class));
+        return null;
+    }
+
+    public ContentMap getAsMapOrDefault(String key, ContentMap contentMap){
+        if (this.containsKey(key))
+            return new ContentMap(this.getAs(key,Map.class));
+        return contentMap;
     }
 
     public <T> Collection<T> getAsCollectionOf(String key , Class<T> c){

@@ -66,6 +66,34 @@ class CollectionFieldTypeSpec extends Specification{
         result
     }
 
+    void "validate should accept collections if the type is right with no config"(){
+
+        given:
+        "a type"
+        FieldType fieldType = Mock(FieldType)
+
+        when:
+        def result = collectionFieldType.validateSubmission(["ASD"],new ContentMap(
+                [
+                        collectionType:[
+                                type:"arf"
+                        ]
+                ]
+        ),[])
+
+        then:
+        "the field type should be fetched"
+        1 * fieldTypeService.getFieldType("arf") >> fieldType
+
+        and:
+        "the collection members should be validated"
+        1 * fieldType.validateSubmission("ASD",new ContentMap(),[]) >> true
+
+
+        and:
+        result
+    }
+
     void "validate should accept collections if the type is wrong"(){
 
         given:
@@ -122,6 +150,38 @@ class CollectionFieldTypeSpec extends Specification{
         and:
         "the collection members should be validated"
         1 * fieldType.convertSubmission("ASD",new ContentMap([ruff:"meow"]),content) >> "asd"
+
+
+        and:
+        result == ["asd"]
+    }
+
+    void "convert should accept no config"(){
+
+        given:
+        "a type"
+        FieldType fieldType = Mock(FieldType)
+
+        and:
+        "some content"
+        Content content = new Content();
+
+        when:
+        def result = collectionFieldType.convertSubmission(["ASD"],new ContentMap(
+                [
+                        collectionType:[
+                                type:"arf"
+                        ]
+                ]
+        ),content)
+
+        then:
+        "the field type should be fetched"
+        1 * fieldTypeService.getFieldType("arf") >> fieldType
+
+        and:
+        "the collection members should be validated"
+        1 * fieldType.convertSubmission("ASD",new ContentMap(),content) >> "asd"
 
 
         and:

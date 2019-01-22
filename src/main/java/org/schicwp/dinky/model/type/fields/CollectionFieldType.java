@@ -45,7 +45,7 @@ public class CollectionFieldType implements FieldType {
         Collection<?> collection = (Collection) object;
 
         for (Object o : collection) {
-            if (!fieldType.validateSubmission(o, collectionType.getAsMap("config"), errors)) {
+            if (!fieldType.validateSubmission(o, collectionType.getAsMapOrDefault("config", new ContentMap()), errors)) {
                 errors.add("One or more of collection is invalid");
                 return false;
             }
@@ -70,7 +70,7 @@ public class CollectionFieldType implements FieldType {
         return in.stream()
                 .map(i->
                         fieldType.convertSubmission(
-                                i,collectionType.getAsMap("config"),owner
+                                i,collectionType.getAsMapOrDefault("config", new ContentMap()),owner
                          )
                 ).collect(Collectors.toList());
     }
