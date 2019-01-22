@@ -8,7 +8,7 @@ import org.schicwp.dinky.model.ContentMap;
 public class ActionHookConfig {
 
     private String name;
-    private ContentMap config;
+    private ContentMap config = new ContentMap();
 
     public String getName() {
         return name;
