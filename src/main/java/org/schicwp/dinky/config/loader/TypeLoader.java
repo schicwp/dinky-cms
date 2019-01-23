@@ -4,6 +4,7 @@ import org.schicwp.dinky.config.ContentTypeConfig;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.type.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.Index;
@@ -36,7 +37,8 @@ public class TypeLoader {
     @Autowired
     FieldTypeService fieldTypeService;
 
-    String configDir = "./types";
+    @Value("${dinky.types}")
+    private String configDir;
 
     @PostConstruct
     @Scheduled(fixedRate = 15000L)

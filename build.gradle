@@ -22,6 +22,14 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    main {
+        java {
+            exclude 'org/schicwp/dinky/security/ProviderConfig.java'
+        }
+    }
+}
+
 jar{
     enabled = true
 }

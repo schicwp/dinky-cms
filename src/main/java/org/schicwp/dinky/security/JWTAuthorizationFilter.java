@@ -13,8 +13,6 @@ import java.io.IOException;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-
-    private final String SECRET = "SecretKeyToGenJWTs";
     private final String HEADER_STRING = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 

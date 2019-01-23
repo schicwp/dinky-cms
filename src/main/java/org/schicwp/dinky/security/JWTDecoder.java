@@ -7,7 +7,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +16,11 @@ import java.util.Collection;
  */
 public class JWTDecoder {
 
-    private final String SECRET = "SecretKeyToGenJWTs";
+    private final String SECRET;
+
+    public JWTDecoder(String secret) {
+        SECRET = secret;
+    }
 
     public UsernamePasswordAuthenticationToken decode(String token){
         DecodedJWT verify = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))

@@ -5,6 +5,7 @@ import org.schicwp.dinky.config.StateConfig;
 import org.schicwp.dinky.config.WorkflowConfig;
 import org.schicwp.dinky.workflow.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -26,8 +27,8 @@ public class WorkflowLoader {
 
     private static final Logger logger = Logger.getLogger(WorkflowLoader.class.getCanonicalName());
 
-    private String configDir = "workflows";
-
+    @Value("${dinky.workflows}")
+    private String configDir;
 
     @Autowired
     ActionHookFactoryService actionHookFactoryService;
