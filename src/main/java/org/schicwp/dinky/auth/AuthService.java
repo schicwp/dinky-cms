@@ -12,9 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -26,12 +24,16 @@ import java.util.stream.Collectors;
 public class AuthService {
 
     private Map<String,String> groupMap = new HashMap<>();
+    private List<String> allUsers = new ArrayList<>();
+    private final ThreadLocal<User> forcedUser = new ThreadLocal<>();
 
     public void setGroupMap(Map<String, String> groupMap) {
         this.groupMap = groupMap;
     }
 
-    private final ThreadLocal<User> forcedUser = new ThreadLocal<>();
+    public void setAllUsers(List<String> allUsers) {
+        this.allUsers = allUsers;
+    }
 
     private static final User SYSTEM_USER = new User("system", Collections.emptyList(),true);
 
@@ -66,13 +68,18 @@ public class AuthService {
 
         if (authentication != null) {
 
+            List<String> grantedGroups = authentication.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .map(groupMap::get)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            grantedGroups.addAll(allUsers);
+
             return new User(
                     authentication.getName(),
-                    authentication.getAuthorities()
-                        .stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .map(groupMap::get)
-                        .collect(Collectors.toList()),
+                    grantedGroups,
                     false
             );
         }
