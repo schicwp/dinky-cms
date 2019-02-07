@@ -1,5 +1,7 @@
 package org.schicwp.dinky.content;
 
+import org.schicwp.dinky.auth.AuthService;
+import org.schicwp.dinky.auth.User;
 import org.schicwp.dinky.exceptions.PermissionException;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.ContentHistory;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,9 @@ public class ContentService {
 
     @Autowired
     QueryTotalCache queryTotalCache;
+
+    @Autowired
+    AuthService authService;
 
     public Content save(Content content) {
 
@@ -84,7 +90,7 @@ public class ContentService {
     public Page<Content> findAssigned(Query query,Pageable pageable) {
 
         Query finalQuery = query.addCriteria(
-                permissionService.getAssignedPermissionFilter()
+                getAssignedPermissionFilter()
         ).with(pageable);
 
 
@@ -98,7 +104,7 @@ public class ContentService {
     public Page<Content> findMine(Query query,Pageable pageable) {
 
         Query finalQuery = query.addCriteria(
-                permissionService.getOwnedPermissionFilter()
+                getOwnedPermissionFilter()
         ).with(pageable);
 
 
@@ -122,7 +128,7 @@ public class ContentService {
         return queryTotalCache
                 .getCountForQuery(
                         query.addCriteria(
-                                permissionService.getAssignedPermissionFilter()
+                                getAssignedPermissionFilter()
                         )
                 );
     }
@@ -131,9 +137,33 @@ public class ContentService {
         return queryTotalCache
                 .getCountForQuery(
                         query.addCriteria(
-                                permissionService.getOwnedPermissionFilter()
+                                getOwnedPermissionFilter()
                         )
                 );
+    }
+
+    private Criteria getAssignedPermissionFilter() {
+
+        User user = authService.getCurrentUser();
+
+        return new Criteria().andOperator(
+                permissionService.getPermissionFilter(),
+                new Criteria().orOperator(
+                        Criteria.where("assignedUser").is(user.getUsername()),
+                        Criteria.where("assignedGroup").in(user.getGroups())
+                )
+        );
+
+    }
+
+    private Criteria getOwnedPermissionFilter() {
+
+        User user = authService.getCurrentUser();
+
+        return new Criteria().andOperator(
+                permissionService.getPermissionFilter(),
+                Criteria.where("owner").is(user.getUsername())
+        );
     }
 
 
