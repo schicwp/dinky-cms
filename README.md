@@ -398,7 +398,13 @@ hooks that may want to work on the same values.
 
 ## Search
 
-Search is provided by [elasticsearch]().
+The Search feature provides a full text content serach. Content is added to a specific search index by using the _AddToSearch_ action hook. 
+
+As specific search index can be thought of a view or snapshot of data. This can be used to create a user-defined body of content seperate from the workflows governing the content. For example, to create a "published" view of content, a "publish" action can add items to a "published" index, which will represent published content. 
+
+Items can be removed from an index using the _RemoveFromSearch_ action hook.
+
+### Search API
 
 This can be done via the _search_ endpoint, using the **q** parameter:
 
@@ -409,10 +415,6 @@ This can be done via the _search_ endpoint, using the **q** parameter:
 This uses elasticsearch [query string](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html)
 syntax.
 
-
-### Adding to the search index
-
-The _AddToSearch_ action hook can be used to add items to the search index. 
 
 ## Optimistic Locking 
 
@@ -455,17 +457,7 @@ Permissions control who can access or modify a document, or who can execute a ce
 
 ### Content Permissions
 
-Each content resource has an _owner_ and a _group_ field, and permissions for the _owner_, _group_ and 
-_other_ (everybody else) in the fields _ownerPermissions_, _groupPermissions_ and _otherPermissions_.
-
-The _owner_ field represents a user, and the _group_ field represents a group or role. 
-
-The permissions fields may have the following values:
-
- - RW - when this is granted, the item may be read and writen to
- - R - the item may be read
- - W - the item may be written to (but not read)(!)
- - NONE - the item cannot be read or written to
+TODO - update this
  
  
 ### Workflow Permissions
