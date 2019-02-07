@@ -2,6 +2,7 @@ package org.schicwp.dinky.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by will.schick on 1/4/19.
@@ -11,9 +12,9 @@ public class ActionConfig {
     private String name;
     private boolean entryPoint = false;
     private String nextState;
-    private Collection<String> sourceStates = new ArrayList<>();
-    private Collection<String> allowedGroups = new ArrayList<>();
-    private Collection<ActionHookConfig> hooks = new ArrayList<>();
+    private List<String> sourceStates = new ArrayList<>();
+    private List<String> allowedGroups = new ArrayList<>();
+    private List<ActionHookConfig> hooks = new ArrayList<>();
 
 
     public String getName() {
@@ -44,7 +45,7 @@ public class ActionConfig {
         return sourceStates;
     }
 
-    public void setSourceStates(Collection<String> sourceStates) {
+    public void setSourceStates(List<String> sourceStates) {
         this.sourceStates = sourceStates;
     }
 
@@ -52,7 +53,7 @@ public class ActionConfig {
         return allowedGroups;
     }
 
-    public void setAllowedGroups(Collection<String> allowedGroups) {
+    public void setAllowedGroups(List<String> allowedGroups) {
         this.allowedGroups = allowedGroups;
     }
 
@@ -60,7 +61,7 @@ public class ActionConfig {
         return hooks;
     }
 
-    public void setHooks(Collection<ActionHookConfig> hooks) {
+    public void setHooks(List<ActionHookConfig> hooks) {
         this.hooks = hooks;
     }
 }

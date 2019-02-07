@@ -135,11 +135,11 @@ public class WorkflowExecutionService {
 
         contentType.convert(content);
 
-        action.getActionHooks().forEach((name,hook) -> {
-            hook.execute(content,
+        action.getActionHooks().forEach(namedActionHook -> {
+            namedActionHook.getActionHook().execute(content,
                     contentSubmission
                             .getWorkflowConfig()
-                            .getOrDefault(name,new ContentMap())
+                            .getOrDefault(namedActionHook.getName(),new ContentMap())
             );
         });
 

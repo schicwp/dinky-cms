@@ -89,13 +89,15 @@ public class WorkflowLoader {
                             a.getAllowedGroups(),
                             a.getHooks()
                                 .stream()
-                                .collect(
-                                    Collectors.toMap(
-                                            ActionHookConfig::getName,
-                                            h-> actionHookFactoryService
-                                                    .getActionHook(h.getName())
-                                                    .createActionHook(h.getConfig())
+                                    .map(ahc ->
+                                            new NamedActionHook(
+                                                    ahc.getName(),
+                                                    actionHookFactoryService.getActionHook(ahc.getName())
+                                                            .createActionHook(ahc.getConfig())
+                                            )
                                     )
+                                .collect(
+                                    Collectors.toList()
                                 )
                             )
                     ).collect(Collectors.toList()));

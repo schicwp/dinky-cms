@@ -4,6 +4,7 @@ import org.schicwp.dinky.workflow.State;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,8 +13,8 @@ import java.util.Optional;
 public class WorkflowConfig {
 
     private String name;
-    private Collection<StateConfig> states = new ArrayList<>();
-    private Collection<ActionConfig> actions = new ArrayList<>();
+    private List<StateConfig> states = new ArrayList<>();
+    private List<ActionConfig> actions = new ArrayList<>();
 
 
 
@@ -29,7 +30,7 @@ public class WorkflowConfig {
         return states;
     }
 
-    public void setStates(Collection<StateConfig> states) {
+    public void setStates(List<StateConfig> states) {
         this.states = states;
     }
 
@@ -38,7 +39,7 @@ public class WorkflowConfig {
         return actions;
     }
 
-    public void setActions(Collection<ActionConfig> actions) {
+    public void setActions(List<ActionConfig> actions) {
         this.actions = actions;
     }
 }

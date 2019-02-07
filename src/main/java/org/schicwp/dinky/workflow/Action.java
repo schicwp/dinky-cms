@@ -19,19 +19,19 @@ public class Action {
      - Editor
      */
 
-    private String name;
+    private final String name;
     private boolean entryPoint = false;
-    private String nextState;
-    private Collection<String> sourceStates = new ArrayList<>();
-    private Collection<String> allowedGroups = new ArrayList<>();
-    private Map<String,ActionHook> actionHooks = new HashMap<>();
+    private final String nextState;
+    private final Collection<String> sourceStates;
+    private final Collection<String> allowedGroups;
+    private final List<NamedActionHook> actionHooks;
 
     public Action(String name,
                   boolean entryPoint,
                   String nextState,
                   Collection<String> sourceStates,
                   Collection<String> allowedGroups,
-                  Map<String, ActionHook> actionHooks) {
+                  List<NamedActionHook> actionHooks) {
         this.name = name;
         this.entryPoint = entryPoint;
         this.nextState = nextState;
@@ -44,9 +44,6 @@ public class Action {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public boolean isEntryPoint() {
         return entryPoint;
@@ -60,32 +57,21 @@ public class Action {
         return nextState;
     }
 
-    public void setNextState(String nextState) {
-        this.nextState = nextState;
-    }
 
     public Collection<String> getSourceStates() {
         return sourceStates;
     }
 
-    public void setSourceStates(Collection<String> sourceStates) {
-        this.sourceStates = sourceStates;
-    }
 
     public Collection<String> getAllowedGroups() {
         return allowedGroups;
     }
 
-    public void setAllowedGroups(Collection<String> allowedGroups) {
-        this.allowedGroups = allowedGroups;
-    }
 
-    public Map<String, ActionHook> getActionHooks() {
+    public List<NamedActionHook> getActionHooks() {
         return actionHooks;
     }
 
-    public void setActionHooks(Map<String, ActionHook> actionHooks) {
-        this.actionHooks = actionHooks;
-    }
+
 
 }

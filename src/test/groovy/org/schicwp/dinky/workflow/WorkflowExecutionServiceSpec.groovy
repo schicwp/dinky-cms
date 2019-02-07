@@ -341,7 +341,7 @@ class WorkflowExecutionServiceSpec extends Specification {
                  "NewState",
                 [],
                 [],
-                 [:]
+                 []
         )
 
         when:
@@ -448,7 +448,7 @@ class WorkflowExecutionServiceSpec extends Specification {
                 [],
                 [],
                 [
-                        testHook:actionHook
+                        new NamedActionHook("testHook",actionHook)
                 ]
         )
 
@@ -565,7 +565,7 @@ class WorkflowExecutionServiceSpec extends Specification {
                 [],
                 [],
                 [
-                        testHook:actionHook
+                        new NamedActionHook("testHook",actionHook)
                 ]
         )
 
@@ -681,7 +681,7 @@ class WorkflowExecutionServiceSpec extends Specification {
                 [],
                 [],
                 [
-                        testHook:actionHook
+                        new NamedActionHook("testHook",actionHook)
                 ]
         )
 
