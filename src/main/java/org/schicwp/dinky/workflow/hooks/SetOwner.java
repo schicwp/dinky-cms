@@ -25,12 +25,15 @@ public class SetOwner implements ActionHookFactory {
     @Override
     public ActionHook createActionHook(ContentMap config) {
 
-        String globalUser = config.getAsOrDefault("user",authService.getCurrentUser().getUsername());
+        String globalUser = config.getAsOrDefault("user",null);
 
 
         return (content, actionConfig) -> {
 
             String user = actionConfig.getAsOrDefault("user",globalUser);
+
+            if (user == null)
+                user = authService.getCurrentUser().getUsername();
 
             content.setOwner(user);
 
