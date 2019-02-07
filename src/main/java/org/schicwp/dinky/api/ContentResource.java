@@ -2,6 +2,8 @@ package org.schicwp.dinky.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.schicwp.dinky.api.dto.ContentSubmission;
+import org.schicwp.dinky.auth.AuthService;
+import org.schicwp.dinky.auth.User;
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.exceptions.ValidationException;
 import org.schicwp.dinky.model.type.ValidationResult;
@@ -39,6 +41,9 @@ public class ContentResource {
 
     @Autowired
     WorkflowExecutionService workflowExecutionService;
+
+    @Autowired
+    AuthService authService;
 
     @PostMapping("content")
     public Content postContent(
@@ -97,22 +102,7 @@ public class ContentResource {
             @RequestParam Map<String,String> params
             ){
 
-        params.remove("q");
-        params.remove("size");
-        params.remove("page");
-
-        Criteria criteria = new Criteria();
-
-        for (String k:params.keySet()){
-                criteria = criteria.and(k).is(params.get(k));
-        }
-
-        Query query;
-
-        if (q != null)
-            query = new BasicQuery(q).addCriteria(criteria);
-        else
-            query = Query.query(criteria);
+        Query query = generateQueryFromParams(q, params);
 
         return contentRepository.find(
                 query,
@@ -123,13 +113,98 @@ public class ContentResource {
     }
 
 
-    @GetMapping("contentCount")
-    public long countContent(
+
+    @GetMapping("assigned")
+    public Page<Content> assignedContent(
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "page",defaultValue = "0") int page,
+            @RequestParam(value = "q",required = false) String q,
+            @RequestParam Map<String,String> params
+    ) {
+        Query query = addAssignmentFilter(generateQueryFromParams(q,params));
+
+        return contentRepository.find(
+                query,
+                PageRequest.of(page,size,
+                        Sort.by("modified").descending()
+                )
+        );
+    }
+
+
+
+    @GetMapping("mine")
+    public Page<Content> myCountent(
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "page",defaultValue = "0") int page,
+            @RequestParam(value = "q",required = false) String q,
+            @RequestParam Map<String,String> params
+    ) {
+        Query query = addOwnershipFilter(generateQueryFromParams(q, params));
+
+        return contentRepository.find(
+                query,
+                PageRequest.of(page,size,
+                        Sort.by("modified").descending()
+                )
+        );
+    }
+
+
+    @GetMapping("content-count")
+    public long contentCount(
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ){
 
+        Query query = generateQueryFromParams(q,params);
+
+        return contentRepository.count(
+                query
+        );
+    }
+
+    @GetMapping("assigned-count")
+    public long assignedCount(
+            @RequestParam(value = "q",required = false) String q,
+            @RequestParam Map<String,String> params
+    ){
+
+        Query query = addAssignmentFilter(generateQueryFromParams(q,params));
+
+        return contentRepository.count(
+                query
+        );
+    }
+
+    @GetMapping("mine-count")
+    public long mineCount(
+            @RequestParam(value = "q",required = false) String q,
+            @RequestParam Map<String,String> params
+    ){
+
+        Query query = addOwnershipFilter(generateQueryFromParams(q,params));
+
+        return contentRepository.count(
+                query
+        );
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ValidationResult> validationException(ValidationException e) {
+
+        return new ResponseEntity<>(
+                e.getValidationResult(),
+                new HttpHeaders(),
+                HttpStatus.BAD_REQUEST
+        );
+
+    }
+
+    private Query generateQueryFromParams(@RequestParam(value = "q", required = false) String q, @RequestParam Map<String, String> params) {
         params.remove("q");
+        params.remove("size");
+        params.remove("page");
 
         Criteria criteria = new Criteria();
 
@@ -143,21 +218,30 @@ public class ContentResource {
             query = new BasicQuery(q).addCriteria(criteria);
         else
             query = Query.query(criteria);
-
-        return contentRepository.count(
-                query
-        );
+        return query;
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ValidationResult> validationExceptiomn(ValidationException e) {
+    private Query addAssignmentFilter(Query query) {
+        User user = authService.getCurrentUser();
 
-        return new ResponseEntity<>(
-                e.getValidationResult(),
-                new HttpHeaders(),
-                HttpStatus.BAD_REQUEST
+        query.addCriteria(
+                new Criteria().orOperator(
+                        Criteria.where("assignedUser").is(user.getUsername()),
+                        Criteria.where("assignedGroup").in(user.getGroups())
+                )
         );
 
+        return query;
+    }
+
+    private Query addOwnershipFilter(Query query) {
+        User user = authService.getCurrentUser();
+
+        query.addCriteria(
+                Criteria.where("owner").is(user.getUsername())
+        );
+
+        return query;
     }
 
 
