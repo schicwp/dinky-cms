@@ -5,6 +5,7 @@ import org.schicwp.dinky.auth.User;
 import org.schicwp.dinky.model.Content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -84,6 +85,7 @@ public class PermissionService {
 
 
     public Criteria getPermissionFilter() {
+
         User user = authService.getCurrentUser();
 
         if (user.isSystemUser())
@@ -115,4 +117,73 @@ public class PermissionService {
                         criteria.toArray(new Criteria[0])
                 );
     }
+
+    public Criteria getAssignedPermissionFilter() {
+
+        User user = authService.getCurrentUser();
+
+        if (user.isSystemUser())
+            return new Criteria();
+
+        List<Criteria> criteria = user.getGroups().stream().map(s->
+                Criteria.where("permissions.group." + s + ".read").is(true)
+        ).collect(Collectors.toList());
+
+        criteria.add(
+                Criteria.where("owner").is(user.getUsername()).and("permissions.owner.read").is(true)
+        );
+
+        criteria.add(
+                Criteria.where("permissions.other.read").is(true)
+        );
+
+
+        Criteria result = new Criteria()
+                .orOperator(
+                        criteria.toArray(new Criteria[0])
+                );
+
+        result.and("permissions.assignee.read").is(true)
+                .orOperator(
+                        Criteria.where("assignedUser").is(user.getUsername()),
+                        Criteria.where("assignedGroup").in(user.getGroups())
+                );
+
+        return result;
+    }
+
+    public Criteria getOwnedPermissionFilter() {
+
+        User user = authService.getCurrentUser();
+
+        if (user.isSystemUser())
+            return new Criteria();
+
+        List<Criteria> criteria = user.getGroups().stream().map(s->
+                Criteria.where("permissions.group." + s + ".read").is(true)
+        ).collect(Collectors.toList());
+
+        criteria.add(
+                Criteria.where("permissions.assignee.read").is(true)
+                        .orOperator(
+                                Criteria.where("assignedUser").is(user.getUsername()),
+                                Criteria.where("assignedGroup").in(user.getGroups())
+                        )
+        );
+
+        criteria.add(
+                Criteria.where("permissions.other.read").is(true)
+        );
+
+
+        Criteria result = new Criteria()
+                .orOperator(
+                        criteria.toArray(new Criteria[0])
+                );
+
+        result.and("permissions.owner.read").is(true).and("owner").is(user.getUsername());
+
+        return result;
+    }
+
 }

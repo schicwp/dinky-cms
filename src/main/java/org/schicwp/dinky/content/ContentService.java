@@ -81,11 +81,57 @@ public class ContentService {
         );
     }
 
+    public Page<Content> findAssigned(Query query,Pageable pageable) {
+
+        Query finalQuery = query.addCriteria(
+                permissionService.getAssignedPermissionFilter()
+        ).with(pageable);
+
+
+        return  PageableExecutionUtils.getPage(
+                mongoTemplate.find(finalQuery,Content.class),
+                pageable,
+                () -> queryTotalCache.getCountForQuery(finalQuery)
+        );
+    }
+
+    public Page<Content> findMine(Query query,Pageable pageable) {
+
+        Query finalQuery = query.addCriteria(
+                permissionService.getOwnedPermissionFilter()
+        ).with(pageable);
+
+
+        return  PageableExecutionUtils.getPage(
+                mongoTemplate.find(finalQuery,Content.class),
+                pageable,
+                () -> queryTotalCache.getCountForQuery(finalQuery)
+        );
+    }
+
     public long count(Query query){
         return queryTotalCache
                 .getCountForQuery(
                         query.addCriteria(
                                 permissionService.getPermissionFilter()
+                        )
+                );
+    }
+
+    public long countAssigned(Query query){
+        return queryTotalCache
+                .getCountForQuery(
+                        query.addCriteria(
+                                permissionService.getAssignedPermissionFilter()
+                        )
+                );
+    }
+
+    public long countOwned(Query query){
+        return queryTotalCache
+                .getCountForQuery(
+                        query.addCriteria(
+                                permissionService.getOwnedPermissionFilter()
                         )
                 );
     }

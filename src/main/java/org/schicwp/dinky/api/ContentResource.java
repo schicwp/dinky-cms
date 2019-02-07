@@ -42,9 +42,6 @@ public class ContentResource {
     @Autowired
     WorkflowExecutionService workflowExecutionService;
 
-    @Autowired
-    AuthService authService;
-
     @PostMapping("content")
     public Content postContent(
             @RequestBody ContentSubmission contentSubmission){
@@ -121,9 +118,9 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ) {
-        Query query = addAssignmentFilter(generateQueryFromParams(q,params));
+        Query query = generateQueryFromParams(q,params);
 
-        return contentRepository.find(
+        return contentRepository.findAssigned(
                 query,
                 PageRequest.of(page,size,
                         Sort.by("modified").descending()
@@ -140,9 +137,9 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ) {
-        Query query = addOwnershipFilter(generateQueryFromParams(q, params));
+        Query query = generateQueryFromParams(q, params);
 
-        return contentRepository.find(
+        return contentRepository.findMine(
                 query,
                 PageRequest.of(page,size,
                         Sort.by("modified").descending()
@@ -170,9 +167,9 @@ public class ContentResource {
             @RequestParam Map<String,String> params
     ){
 
-        Query query = addAssignmentFilter(generateQueryFromParams(q,params));
+        Query query = generateQueryFromParams(q,params);
 
-        return contentRepository.count(
+        return contentRepository.countAssigned(
                 query
         );
     }
@@ -183,9 +180,9 @@ public class ContentResource {
             @RequestParam Map<String,String> params
     ){
 
-        Query query = addOwnershipFilter(generateQueryFromParams(q,params));
+        Query query = generateQueryFromParams(q,params);
 
-        return contentRepository.count(
+        return contentRepository.countOwned(
                 query
         );
     }
@@ -221,28 +218,6 @@ public class ContentResource {
         return query;
     }
 
-    private Query addAssignmentFilter(Query query) {
-        User user = authService.getCurrentUser();
-
-        query.addCriteria(
-                new Criteria().orOperator(
-                        Criteria.where("assignedUser").is(user.getUsername()),
-                        Criteria.where("assignedGroup").in(user.getGroups())
-                )
-        );
-
-        return query;
-    }
-
-    private Query addOwnershipFilter(Query query) {
-        User user = authService.getCurrentUser();
-
-        query.addCriteria(
-                Criteria.where("owner").is(user.getUsername())
-        );
-
-        return query;
-    }
 
 
 
