@@ -1,32 +1,36 @@
-package org.schicwp.dinky.workflow
+package org.schicwp.dinky.content
 
 import org.schicwp.dinky.api.dto.ContentSubmission
 import org.schicwp.dinky.auth.AuthService
 import org.schicwp.dinky.auth.User
-import org.schicwp.dinky.content.ContentService
-import org.schicwp.dinky.content.PermissionService
 import org.schicwp.dinky.exceptions.OptimisticLockingException
-import org.schicwp.dinky.exceptions.ValidationException
+import org.schicwp.dinky.exceptions.FieldValidationException
+import org.schicwp.dinky.exceptions.SubmissionValidationException
 import org.schicwp.dinky.model.Content
 import org.schicwp.dinky.model.ContentMap
 import org.schicwp.dinky.model.type.ContentType
 import org.schicwp.dinky.model.type.ContentTypeService
 import org.schicwp.dinky.model.type.ValidationResult
+import org.schicwp.dinky.workflow.Action
+import org.schicwp.dinky.workflow.ActionHook
+import org.schicwp.dinky.workflow.NamedActionHook
+import org.schicwp.dinky.workflow.Workflow
+import org.schicwp.dinky.workflow.WorkflowExecutionService
 import spock.lang.Specification
 
 /**
  * Created by will.schick on 1/21/19.
  */
-class WorkflowExecutionServiceSpec extends Specification {
+class ContentSubmissionServiceSpec extends Specification {
 
 
-    WorkflowExecutionService workflowExecutionService;
+    ContentSubmissionService contentSubmissionService;
 
     ContentTypeService contentTypeService;
     ContentService contentService;
     PermissionService permissionService;
     AuthService authService;
-    WorkflowService workflowService;
+    WorkflowExecutionService workflowExecutionService;
 
 
     void setup(){
@@ -34,17 +38,20 @@ class WorkflowExecutionServiceSpec extends Specification {
         contentService = Mock(ContentService)
         permissionService = Mock(PermissionService)
         authService = Mock(AuthService)
-        workflowService = Mock(WorkflowService)
+        workflowExecutionService = Mock(WorkflowExecutionService)
 
-        workflowExecutionService = new WorkflowExecutionService(
+        contentSubmissionService = new ContentSubmissionService(
                 contentTypeService: contentTypeService,
                 contentService: contentService,
                 permissionService: permissionService,
                 authService: authService,
-                workflowService: workflowService
+                workflowExecutionService: workflowExecutionService
         )
 
         _ * authService.currentUser >> new User("bob",[],false)
+
+        0 * _._
+
     }
 
 
@@ -52,7 +59,7 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         when:
         "a workflow is executed"
-        workflowExecutionService.executeAction(
+        contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
@@ -77,7 +84,7 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         when:
         "a workflow is executed"
-        workflowExecutionService.executeAction(
+        contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
@@ -113,7 +120,7 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         when:
         "a workflow is executed"
-        workflowExecutionService.executeAction(
+        contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
@@ -144,7 +151,7 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         when:
         "a workflow is executed"
-        workflowExecutionService.executeAction(
+        contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
@@ -171,6 +178,7 @@ class WorkflowExecutionServiceSpec extends Specification {
         given:
         "a content map"
         ContentMap contentMap = new ContentMap();
+        contentMap.title = "the title"
 
         and:
         "some content"
@@ -185,10 +193,12 @@ class WorkflowExecutionServiceSpec extends Specification {
         "a content type"
         ContentType contentType = Mock(ContentType)
         _ * contentType.workflows >> ["wf1","wf2"]
+        _ * contentType.nameField >> "title"
+        _ * content.setName("the title")
 
         when:
         "a workflow is executed"
-        workflowExecutionService.executeAction(
+        contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
@@ -223,18 +233,21 @@ class WorkflowExecutionServiceSpec extends Specification {
         1 * contentType.validate(content) >> new ValidationResult( valid: false)
 
         and:
-        thrown(ValidationException)
+        thrown(FieldValidationException)
 
 
 
 
     }
 
-    void "an exception should be thrown submitted state is not valid"(){
+
+
+    void "it should save and execute workflow if action given if everything is ok"(){
 
         given:
         "a content map"
         ContentMap contentMap = new ContentMap();
+        contentMap.title = "the title"
 
         and:
         "some content"
@@ -250,84 +263,8 @@ class WorkflowExecutionServiceSpec extends Specification {
         "a content type"
         ContentType contentType = Mock(ContentType)
         _ * contentType.workflows >> ["wf1","wf2"]
-
-        and:
-        "a workflow"
-        Workflow workflow = Mock(Workflow)
-
-        when:
-        "a workflow is executed"
-        workflowExecutionService.executeAction(
-                new ContentSubmission(
-                        id:"123",
-                        workflow: "wf1",
-                        type: "cat",
-                        version: 2,
-                        action: "PutInNewState",
-                        content: contentMap
-                )
-        )
-
-        then:
-        "the content type should be fetched"
-        1 * contentTypeService.getContentType("cat") >> contentType
-
-        and:
-        "the content should be fetched"
-        1 * contentService.findById("123") >> Optional.of(content)
-
-        and:
-        "the write perms should be checked"
-        1 * permissionService.allowWrite(content) >> true
-
-        and:
-        "the new content should be merged"
-        1 * content.merge(contentMap) >> content
-
-        and:
-        "the content should be sanitized"
-        1 * contentType.sanitize(content) >> content
-
-        and:
-        "validated"
-        1 * contentType.validate(content) >> new ValidationResult( valid: true)
-
-        and:
-        "the workflow should be fetched"
-        1 * workflowService.getWorkflow("wf1") >> workflow
-
-        and:
-        "the next action should be fetched"
-        1 * workflow.getActionFromState("OldState","PutInNewState") >> Optional.empty()
-
-        and:
-        thrown(RuntimeException)
-
-
-
-
-    }
-
-    void "it should save if everything is ok"(){
-
-        given:
-        "a content map"
-        ContentMap contentMap = new ContentMap();
-
-        and:
-        "some content"
-        Content content = Mock(Content)
-        _*content.version >> 2
-        _*content.content >> contentMap
-        _*content.state >> "OldState"
-        _ * content.toString() >> "test content"
-
-
-
-        and:
-        "a content type"
-        ContentType contentType = Mock(ContentType)
-        _ * contentType.workflows >> ["wf1","wf2"]
+        _ * contentType.nameField >> "title"
+        _ * content.setName("the title")
 
         and:
         "a workflow"
@@ -346,7 +283,7 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         when:
         "a workflow is executed"
-        def result = workflowExecutionService.executeAction(
+        def result = contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
@@ -382,21 +319,12 @@ class WorkflowExecutionServiceSpec extends Specification {
         1 * contentType.validate(content) >> new ValidationResult( valid: true)
 
         and:
-        "the workflow should be fetched"
-        1 * workflowService.getWorkflow("wf1") >> workflow
-
-        and:
-        "the next action should be fetched"
-        1 * workflow.getActionFromState("OldState","PutInNewState") >> Optional.of(action)
-
-        and:
-        "the state should be set on the content"
-        1 * content.setState("NewState")
-        1 * content.setWorkflow("wf1")
-
-        and:
         "the content should be converted"
         1 * contentType.convert(content)
+
+        and:
+        "the workflow should executed"
+        1 * workflowExecutionService.executeWorkflowAction('wf1', 'PutInNewState',  content, [:])
 
         and:
         "the content should be saved"
@@ -404,17 +332,14 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         and:
         result == content
-
-
-
-
     }
 
-    void "it should execute action hooks"(){
+    void "it should save if no action given if everything is ok"(){
 
         given:
         "a content map"
         ContentMap contentMap = new ContentMap();
+        contentMap.title = "the title"
 
         and:
         "some content"
@@ -430,14 +355,12 @@ class WorkflowExecutionServiceSpec extends Specification {
         "a content type"
         ContentType contentType = Mock(ContentType)
         _ * contentType.workflows >> ["wf1","wf2"]
+        _ * contentType.nameField >> "title"
+        _ * content.setName("the title")
 
         and:
         "a workflow"
         Workflow workflow = Mock(Workflow)
-
-        and:
-        "an action hook"
-        ActionHook actionHook = Mock(ActionHook)
 
         and:
         "an action"
@@ -447,26 +370,18 @@ class WorkflowExecutionServiceSpec extends Specification {
                 "NewState",
                 [],
                 [],
-                [
-                        new NamedActionHook("testHook",actionHook)
-                ]
+                []
         )
 
         when:
         "a workflow is executed"
-        def result = workflowExecutionService.executeAction(
+        def result = contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
                         type: "cat",
                         version: 2,
-                        action: "PutInNewState",
-                        content: contentMap,
-                        workflowConfig: [
-                                testHook: new ContentMap( [
-                                        ruff:"meow"
-                                ])
-                        ]
+                        content: contentMap
                 )
         )
 
@@ -495,25 +410,8 @@ class WorkflowExecutionServiceSpec extends Specification {
         1 * contentType.validate(content) >> new ValidationResult( valid: true)
 
         and:
-        "the workflow should be fetched"
-        1 * workflowService.getWorkflow("wf1") >> workflow
-
-        and:
-        "the next action should be fetched"
-        1 * workflow.getActionFromState("OldState","PutInNewState") >> Optional.of(action)
-
-        and:
-        "the state should be set on the content"
-        1 * content.setState("NewState")
-        1 * content.setWorkflow("wf1")
-
-        and:
         "the content should be converted"
         1 * contentType.convert(content)
-
-        and:
-        "the hooks should be executed"
-        1 * actionHook.execute(content,[ruff:"meow"])
 
         and:
         "the content should be saved"
@@ -527,132 +425,18 @@ class WorkflowExecutionServiceSpec extends Specification {
 
     }
 
-    void "it should execute using implied workflow if given one is null and type has only one"(){
+
+    void "it should not save if no action given and it is new"(){
 
         given:
         "a content map"
         ContentMap contentMap = new ContentMap();
+        contentMap.title = "the title"
 
         and:
         "some content"
         Content content = Mock(Content)
-        _*content.version >> 2
-        _*content.content >> contentMap
-        _*content.state >> "OldState"
-        _ * content.toString() >> "test content"
-
-
-
-        and:
-        "a content type"
-        ContentType contentType = Mock(ContentType)
-        _ * contentType.workflows >> ["wf1"]
-
-        and:
-        "a workflow"
-        Workflow workflow = Mock(Workflow)
-
-        and:
-        "an action hook"
-        ActionHook actionHook = Mock(ActionHook)
-
-        and:
-        "an action"
-        Action action = new Action(
-                "test",
-                false,
-                "NewState",
-                [],
-                [],
-                [
-                        new NamedActionHook("testHook",actionHook)
-                ]
-        )
-
-        when:
-        "a workflow is executed"
-        def result = workflowExecutionService.executeAction(
-                new ContentSubmission(
-                        id:"123",
-                        type: "cat",
-                        version: 2,
-                        action: "PutInNewState",
-                        content: contentMap,
-                        workflowConfig: [
-                                testHook: new ContentMap( [
-                                        ruff:"meow"
-                                ])
-                        ]
-                )
-        )
-
-        then:
-        "the content type should be fetched"
-        1 * contentTypeService.getContentType("cat") >> contentType
-
-        and:
-        "the content should be fetched"
-        1 * contentService.findById("123") >> Optional.of(content)
-
-        and:
-        "the write perms should be checked"
-        1 * permissionService.allowWrite(content) >> true
-
-        and:
-        "the new content should be merged"
-        1 * content.merge(contentMap) >> content
-
-        and:
-        "the content should be sanitized"
-        1 * contentType.sanitize(content) >> content
-
-        and:
-        "validated"
-        1 * contentType.validate(content) >> new ValidationResult( valid: true)
-
-        and:
-        "the workflow should be fetched"
-        1 * workflowService.getWorkflow("wf1") >> workflow
-
-        and:
-        "the next action should be fetched"
-        1 * workflow.getActionFromState("OldState","PutInNewState") >> Optional.of(action)
-
-        and:
-        "the state should be set on the content"
-        1 * content.setState("NewState")
-        1 * content.setWorkflow("wf1")
-
-        and:
-        "the content should be converted"
-        1 * contentType.convert(content)
-
-        and:
-        "the hooks should be executed"
-        1 * actionHook.execute(content,[ruff:"meow"])
-
-        and:
-        "the content should be saved"
-        1 * contentService.save(content) >> content
-
-        and:
-        result == content
-
-
-
-
-    }
-
-    void "it should execute action hooks with empty config if not provided"(){
-
-        given:
-        "a content map"
-        ContentMap contentMap = new ContentMap();
-
-        and:
-        "some content"
-        Content content = Mock(Content)
-        _*content.version >> 2
+        _*content.version >> 1
         _*content.content >> contentMap
         _*content.state >> "OldState"
         _ * content.toString() >> "test content"
@@ -663,14 +447,12 @@ class WorkflowExecutionServiceSpec extends Specification {
         "a content type"
         ContentType contentType = Mock(ContentType)
         _ * contentType.workflows >> ["wf1","wf2"]
+        _ * contentType.nameField >> "title"
+        _ * content.setName("the title")
 
         and:
         "a workflow"
         Workflow workflow = Mock(Workflow)
-
-        and:
-        "an action hook"
-        ActionHook actionHook = Mock(ActionHook)
 
         and:
         "an action"
@@ -680,21 +462,18 @@ class WorkflowExecutionServiceSpec extends Specification {
                 "NewState",
                 [],
                 [],
-                [
-                        new NamedActionHook("testHook",actionHook)
-                ]
+                []
         )
 
         when:
         "a workflow is executed"
-        def result = workflowExecutionService.executeAction(
+        def result = contentSubmissionService.processSubmission(
                 new ContentSubmission(
                         id:"123",
                         workflow: "wf1",
                         type: "cat",
-                        version: 2,
-                        action: "PutInNewState",
-                        content: contentMap,
+                        version: 0,
+                        content: contentMap
                 )
         )
 
@@ -704,54 +483,110 @@ class WorkflowExecutionServiceSpec extends Specification {
 
         and:
         "the content should be fetched"
-        1 * contentService.findById("123") >> Optional.of(content)
+        1 * contentService.findById("123") >> Optional.empty()
 
         and:
-        "the write perms should be checked"
-        1 * permissionService.allowWrite(content) >> true
-
-        and:
-        "the new content should be merged"
-        1 * content.merge(contentMap) >> content
-
-        and:
-        "the content should be sanitized"
-        1 * contentType.sanitize(content) >> content
+        "sanitzed"
+        1 * contentType.sanitize(_)
 
         and:
         "validated"
-        1 * contentType.validate(content) >> new ValidationResult( valid: true)
-
-        and:
-        "the workflow should be fetched"
-        1 * workflowService.getWorkflow("wf1") >> workflow
-
-        and:
-        "the next action should be fetched"
-        1 * workflow.getActionFromState("OldState","PutInNewState") >> Optional.of(action)
-
-        and:
-        "the state should be set on the content"
-        1 * content.setState("NewState")
-        1 * content.setWorkflow("wf1")
+        1 * contentType.validate(_) >> new ValidationResult( valid: true)
 
         and:
         "the content should be converted"
-        1 * contentType.convert(content)
-
-        and:
-        "the hooks should be executed"
-        1 * actionHook.execute(content,[:])
+        1 * contentType.convert(_)
 
         and:
         "the content should be saved"
-        1 * contentService.save(content) >> content
+        0 * contentService.save(_)
 
         and:
-        result == content
+        thrown(SubmissionValidationException)
 
 
 
 
     }
+
+    void "it should not save if no action given and it is new (no id)"(){
+
+        given:
+        "a content map"
+        ContentMap contentMap = new ContentMap();
+        contentMap.title = "the title"
+
+        and:
+        "some content"
+        Content content = Mock(Content)
+        _*content.version >> 1
+        _*content.content >> contentMap
+        _*content.state >> "OldState"
+        _ * content.toString() >> "test content"
+
+
+
+        and:
+        "a content type"
+        ContentType contentType = Mock(ContentType)
+        _ * contentType.workflows >> ["wf1","wf2"]
+        _ * contentType.nameField >> "title"
+        _ * content.setName("the title")
+
+        and:
+        "a workflow"
+        Workflow workflow = Mock(Workflow)
+
+        and:
+        "an action"
+        Action action = new Action(
+                "test",
+                false,
+                "NewState",
+                [],
+                [],
+                []
+        )
+
+        when:
+        "a workflow is executed"
+        def result = contentSubmissionService.processSubmission(
+                new ContentSubmission(
+                        workflow: "wf1",
+                        type: "cat",
+                        version: 0,
+                        content: contentMap
+                )
+        )
+
+        then:
+        "the content type should be fetched"
+        1 * contentTypeService.getContentType("cat") >> contentType
+
+
+        and:
+        "sanitzed"
+        1 * contentType.sanitize(_)
+
+        and:
+        "validated"
+        1 * contentType.validate(_) >> new ValidationResult( valid: true)
+
+        and:
+        "the content should be converted"
+        1 * contentType.convert(_)
+
+        and:
+        "the content should be saved"
+        0 * contentService.save(_)
+
+        and:
+        thrown(SubmissionValidationException)
+
+
+
+
+    }
+
+
 }

@@ -15,15 +15,19 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Created by will.schick on 1/5/19.
  */
 @Service
 public class ContentService {
+
+    private static final Logger logger = Logger.getLogger(ContentService.class.getCanonicalName());
 
     @Autowired
     ContentRepository contentRepository;
@@ -43,6 +47,7 @@ public class ContentService {
     @Autowired
     AuthService authService;
 
+    @Transactional
     public Content save(Content content) {
 
         queryTotalCache.invalidate();
@@ -60,6 +65,38 @@ public class ContentService {
         return contentHistoryRepository
                 .findAllByContentIdOrderByContentVersionDesc(id,pageable)
                 .map(ContentHistory::getContent);
+    }
+
+    public Content getHistoricalVersion(String id, int version){
+
+        if (!this.findById(id).isPresent())
+            throw new NoSuchElementException("No such element");
+
+        return contentHistoryRepository
+                .findByContentIdAndContentVersion(id,version)
+                .getContent();
+    }
+
+    @Transactional
+    public Content revertToHistoricalVersion(String id, int version){
+
+        if (!this.findById(id).isPresent())
+            throw new NoSuchElementException("No such element");
+
+        Content oldVersion =  contentHistoryRepository
+                .findByContentIdAndContentVersion(id,version)
+                .getContent();
+
+        Content currentVersion = contentRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        if (!permissionService.allowWrite(currentVersion))
+            throw new PermissionException();
+
+        logger.info(String.format("Reverting %s to %s",currentVersion,oldVersion));
+
+        oldVersion.setVersion(currentVersion.getVersion() + 1);
+
+        return save(oldVersion);
     }
 
 

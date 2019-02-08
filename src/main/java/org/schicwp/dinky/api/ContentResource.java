@@ -2,13 +2,14 @@ package org.schicwp.dinky.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.schicwp.dinky.api.dto.ContentSubmission;
-import org.schicwp.dinky.auth.AuthService;
-import org.schicwp.dinky.auth.User;
+import org.schicwp.dinky.exceptions.OptimisticLockingException;
+import org.schicwp.dinky.exceptions.PermissionException;
+import org.schicwp.dinky.exceptions.SubmissionValidationException;
 import org.schicwp.dinky.model.Content;
-import org.schicwp.dinky.exceptions.ValidationException;
+import org.schicwp.dinky.exceptions.FieldValidationException;
 import org.schicwp.dinky.model.type.ValidationResult;
 import org.schicwp.dinky.content.ContentService;
-import org.schicwp.dinky.workflow.WorkflowExecutionService;
+import org.schicwp.dinky.content.ContentSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -40,38 +42,29 @@ public class ContentResource {
     ContentService contentRepository;
 
     @Autowired
-    WorkflowExecutionService workflowExecutionService;
+    ContentSubmissionService contentSubmissionService;
 
     @PostMapping("content")
-    public Content postContent(
-            @RequestBody ContentSubmission contentSubmission){
-        return workflowExecutionService.executeAction( contentSubmission);
+    public Content postContent(@Valid @RequestBody ContentSubmission contentSubmission){
+        return contentSubmissionService.processSubmission( contentSubmission);
     }
 
     @PostMapping( value = "content",consumes = "multipart/form-data")
     public Content postContentMultipart(
             MultipartHttpServletRequest request,
-            @RequestParam("content") String content
-            ) throws IOException{
+            @RequestParam("content") String content) throws IOException{
 
+        ContentSubmission contentSubmission = new ObjectMapper().readValue(content,ContentSubmission.class);
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                ContentSubmission contentSubmission = objectMapper.readValue(content,ContentSubmission.class);
+        request.getFileNames().forEachRemaining((f)->{
+            for (String k: contentSubmission.getContent().keySet()){
+                if (f.equals(contentSubmission.getContent().get(k)))
+                    contentSubmission.getContent().put(k,request.getFile(f));
+            }
+        });
 
-                request.getFileNames().forEachRemaining((f)->{
-
-                    for (String k: contentSubmission.getContent().keySet()){
-
-                        if (f.equals(contentSubmission.getContent().get(k)))
-                            contentSubmission.getContent().put(k,request.getFile(f));
-
-                    }
-                });
-
-        return workflowExecutionService.executeAction(contentSubmission);
+        return contentSubmissionService.processSubmission(contentSubmission);
     }
-
-
 
     @GetMapping("content/{id}")
     public Content getContent(@PathVariable("id") String id){
@@ -91,6 +84,22 @@ public class ContentResource {
         );
     }
 
+    @GetMapping("content/{id}/history/{version}")
+    public Content getContentHistoryVersion(
+            @PathVariable("id") String id,
+            @PathVariable("version") int version
+    ){
+        return  contentRepository.getHistoricalVersion(id,version);
+    }
+
+    @PostMapping("content/{id}/history/{version}")
+    public Content revertToVersion(
+            @PathVariable("id") String id,
+            @PathVariable("version") int version
+    ){
+        return  contentRepository.revertToHistoricalVersion(id,version);
+    }
+
     @GetMapping("content")
     public Page<Content> listContent(
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -98,11 +107,8 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
             ){
-
-        Query query = generateQueryFromParams(q, params);
-
         return contentRepository.find(
-                query,
+                generateQueryFromParams(q,params),
                 PageRequest.of(page,size,
                     Sort.by("modified").descending()
                 )
@@ -118,10 +124,8 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ) {
-        Query query = generateQueryFromParams(q,params);
-
         return contentRepository.findAssigned(
-                query,
+                generateQueryFromParams(q,params),
                 PageRequest.of(page,size,
                         Sort.by("modified").descending()
                 )
@@ -137,10 +141,8 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ) {
-        Query query = generateQueryFromParams(q, params);
-
         return contentRepository.findMine(
-                query,
+                generateQueryFromParams(q,params),
                 PageRequest.of(page,size,
                         Sort.by("modified").descending()
                 )
@@ -153,12 +155,7 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ){
-
-        Query query = generateQueryFromParams(q,params);
-
-        return contentRepository.count(
-                query
-        );
+        return contentRepository.count(generateQueryFromParams(q,params));
     }
 
     @GetMapping("assigned-count")
@@ -166,12 +163,7 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ){
-
-        Query query = generateQueryFromParams(q,params);
-
-        return contentRepository.countAssigned(
-                query
-        );
+        return contentRepository.countAssigned(generateQueryFromParams(q,params));
     }
 
     @GetMapping("mine-count")
@@ -179,24 +171,29 @@ public class ContentResource {
             @RequestParam(value = "q",required = false) String q,
             @RequestParam Map<String,String> params
     ){
-
-        Query query = generateQueryFromParams(q,params);
-
-        return contentRepository.countOwned(
-                query
-        );
+        return contentRepository.countOwned(generateQueryFromParams(q,params));
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ValidationResult> validationException(ValidationException e) {
-
-        return new ResponseEntity<>(
-                e.getValidationResult(),
-                new HttpHeaders(),
-                HttpStatus.BAD_REQUEST
-        );
-
+    @ExceptionHandler(FieldValidationException.class)
+    public ResponseEntity<ValidationResult> validationException(FieldValidationException e) {
+        return new ResponseEntity<>(e.getValidationResult(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(OptimisticLockingException.class)
+    public ResponseEntity<?> validationException(OptimisticLockingException e) {
+        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PermissionException.class)
+    public ResponseEntity<?> validationException(PermissionException e) {
+        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(SubmissionValidationException.class)
+    public ResponseEntity<?> validationException(SubmissionValidationException e) {
+        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
 
     private Query generateQueryFromParams(@RequestParam(value = "q", required = false) String q, @RequestParam Map<String, String> params) {
         params.remove("q");
@@ -217,15 +214,4 @@ public class ContentResource {
             query = Query.query(criteria);
         return query;
     }
-
-
-
-
-
-
-
-
-
-
-
 }

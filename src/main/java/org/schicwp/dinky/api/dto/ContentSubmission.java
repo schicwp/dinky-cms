@@ -14,9 +14,7 @@ public class ContentSubmission {
     private String id;
     @NotNull
     private String type;
-    @NotNull
     private String action;
-    @NotNull
     private String workflow;
 
     private Map<String,ContentMap> workflowConfig = new HashMap<>();
