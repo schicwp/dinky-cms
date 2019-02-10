@@ -22,7 +22,10 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * Created by will.schick on 1/5/19.
+ * Allows access to content. Query methods will respect the permissions of the auth context.
+ *
+ * <strong>WARNING</strong> - the "save" method should not be used directly. The {@link ContentSubmissionService}
+ * should be used to modify content in most cases;
  */
 @Service
 public class ContentService {
@@ -48,7 +51,7 @@ public class ContentService {
     AuthService authService;
 
     @Transactional
-    public Content save(Content content) {
+    Content save(Content content) {
 
         queryTotalCache.invalidate();
 
@@ -57,6 +60,12 @@ public class ContentService {
         return contentRepository.save(content);
     }
 
+    /**
+     * Gets a page of history for a certain item.
+     * @param id - id of content
+     * @param pageable - pagination information
+     * @return a page of history in descending order of version
+     */
     public Page<Content> getHistory(String id, Pageable pageable){
 
         if (!this.findById(id).isPresent())
@@ -67,6 +76,12 @@ public class ContentService {
                 .map(ContentHistory::getContent);
     }
 
+    /**
+     * Gets a historical version
+     * @param id - id of content
+     * @param version - version of content
+     * @return the version of the content specified
+     */
     public Content getHistoricalVersion(String id, int version){
 
         if (!this.findById(id).isPresent())
@@ -170,6 +185,12 @@ public class ContentService {
                 );
     }
 
+    /**
+     * Gets the count of content matching the given query which are owned by the current user
+     *
+     * @param query a content quert
+     * @return the count of content matching the given query which are owned by the current user
+     */
     public long countOwned(Query query){
         return queryTotalCache
                 .getCountForQuery(

@@ -6,9 +6,17 @@ import org.schicwp.dinky.model.ContentMap;
 import java.util.Map;
 
 /**
- * Created by will.schick on 1/5/19.
+ * A workflow callback used to execute business as part of a workflow.
  */
 public interface ActionHook {
 
-    public void execute(Content content, ContentMap actionConfig);
+    /**
+     * Executes an action hook. The "actionConfig" is per execution config that can
+     * be merged with the workflow scoped config as part of {@link ActionHookFactory}
+     *
+     *
+     * @param content the content that the workflow is operating on
+     * @param actionConfig the config specific to this workflow action execution
+     */
+    void execute(Content content, ContentMap actionConfig);
 }

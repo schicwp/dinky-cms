@@ -20,7 +20,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
- * Created by will.schick on 1/5/19.
+ * Allows processing of content submissions that will provide correct merging, permissions and workflow behavior.
+ *
  */
 @Service
 public class ContentSubmissionService {
