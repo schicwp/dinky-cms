@@ -38,6 +38,10 @@ bootJar {
     classifier = 'boot'
 }
 
+javadoc {
+    destinationDir = new File("javadocs")
+}
+
 dependencies {
 
     compile("org.springframework.boot:spring-boot-starter-web")

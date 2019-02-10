@@ -1,0 +1,16 @@
+org.schicwp.dinky
+org.schicwp.dinky.api
+org.schicwp.dinky.api.dto
+org.schicwp.dinky.auth
+org.schicwp.dinky.config
+org.schicwp.dinky.config.loader
+org.schicwp.dinky.content
+org.schicwp.dinky.exceptions
+org.schicwp.dinky.model
+org.schicwp.dinky.model.type
+org.schicwp.dinky.model.type.fields
+org.schicwp.dinky.persistence
+org.schicwp.dinky.search
+org.schicwp.dinky.security
+org.schicwp.dinky.workflow
+org.schicwp.dinky.workflow.hooks
