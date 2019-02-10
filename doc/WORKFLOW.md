@@ -85,3 +85,21 @@ will be removed from an index called "default".
 
 ActionHooks may change content values, if they wish. This opens up the potential of side effects between different
 hooks that may want to work on the same values. 
+
+## Workflow Permissions
+
+A workflow action can have a set of _allowedGroups_. These are groups that can execute that action.
+
+In the following example, only members of either the _Friends_ or _Family_ groups can execute the _PutInBag_ 
+action:
+
+```yaml
+actions:
+
+  - name: PutInBag
+    entryPoint: true
+    nextState: InBag
+    allowedGroups:
+     - Friends
+     - Family
+```

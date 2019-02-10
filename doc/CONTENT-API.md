@@ -1,33 +1,3 @@
-# Dinky CMS
-
-This is a small, web based content repository service.
-
-Features:
- - User defined content types
- - User defined workflows
- - Content and workflow permissioning
- - Full text content indexing and searching
- - Content concurrency control using optimistic locking
- - Content version history
-
-
-Tech Stack:
- - MongoDB
- - Elasticsearch
- - Spring Boot
- 
-
-## Topics
- 
-* [Basic Setup](doc/OVERVIEW.md)
-* [Content Modeling](doc/CONTENT.md)
-* [Workflow Modeling](doc/WORKFLOW.md)
-* [Search](doc/SEARCH.md)
-* [Working With Content](CONTENT-API.md)
-* [Extending](doc/EXTENDING.md)
-* [Javadocs](javadocs)
-
-
 
 ## Optimistic Locking 
 
@@ -72,24 +42,6 @@ Permissions control who can access or modify a document, or who can execute a ce
 
 TODO - update this
  
- 
-### Workflow Permissions
-
-A workflow action can have a set of _allowedGroups_. These are groups that can execute that action.
-
-In the following example, only members of either the _Friends_ or _Family_ groups can execute the _PutInBag_ 
-action:
-
-```yaml
-actions:
-
-  - name: PutInBag
-    entryPoint: true
-    nextState: InBag
-    allowedGroups:
-     - Friends
-     - Family
-```
 
 ### Binary Data (Images, Attachments)
 
