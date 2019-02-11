@@ -47,7 +47,7 @@ actions:
 This workflow has three states: _InBag_, _InHand_ and _InMouth_. There are three actions which can be used to move 
 content through the workflow: _PutInBag_, _Take_ and _Eat_. 
 
-The _PutInBag_ action is marked as an **entryPoint**. This means that _new_ content be created using that action. 
+The _PutInBag_ action is marked as an **entryPoint**. This means that _new_ content can be created using that action. 
 Any action can be marked as an **entryPoint**. 
 
 Each action has a single **nextState** field. This is the state that the content will be in after the action is 
@@ -67,7 +67,7 @@ no group restrictions will be placed on the action.
 
 _ActionHooks_ allow business actions to be attached to workflows.
 
-These should have a **name** which identifies the hook to be executed, and a **config**, which will vary depending on \
+These should have a **name** which identifies the hook to be executed, and a **config**, which will vary depending on 
 the hook. 
 
 ```yaml
