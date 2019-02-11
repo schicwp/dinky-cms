@@ -2,7 +2,7 @@
 
 # Working With Content
 
-To work with content using the REST api, there are 
+To work with content using the REST api, there are two overall functions:
 
 1. Submit content as a **ContentSubmission**
 2. Read content as a **ContentResponse**
