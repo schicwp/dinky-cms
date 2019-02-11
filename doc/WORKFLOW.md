@@ -127,7 +127,7 @@ Permissions can be set for the _owner_, _assignee_, _other (anyone else)_ or a s
 
 #### AddToSearch
 
-Adds the content to a search index. The search index can be specified in the _index_ parameter. If not specified, it 
+Adds the content to a [search index](SEARCH.md). The search index can be specified in the _index_ parameter. If not specified, it 
 will be added to an index called "default".
 
 ```yaml
@@ -138,7 +138,7 @@ will be added to an index called "default".
 
 #### RemoveFromSearch
 
-Removes the content from a search index. The search index can be specified in the _index_ parameter. If not specified, it 
+Removes the content from a [search index](SEARCH.md). The search index can be specified in the _index_ parameter. If not specified, it 
 will be removed from an index called "default".
 
 ```yaml
@@ -151,10 +151,12 @@ will be removed from an index called "default".
 
 The order of hook execution will be the order declared in the YAML definition. This can have an impact if the hook
 changes any values in the content.
-                          | 
+                          
 ### Changing Content Values in ActionHooks
 
 ActionHooks may change content values, if they wish. This opens up the potential of side effects between different
 hooks that may want to work on the same values. 
+
+[Back](../)
 
 
