@@ -36,17 +36,17 @@ content         | map       | the content to be submitted                       
     "id": "3e8b17a3-2c5c-4ab3-8ad6-12cf4c5839b8",
     "type":"JellyBean",
     "workflow":"JellyBeanWorkflow",
-	"action":"PutInBag",
-	"version":3,
-	"workflowConfig":{
-	  "Assign":{
-	    "user":"Jerry"
-	  }
-	},
-	"content":{
-		"flavor":"cinnamon",
-		"color": "red"	
-	}
+    "action":"PutInBag",
+    "version":3,
+    "workflowConfig":{
+      "Assign":{
+        "user":"Jerry"
+      }
+    },
+    "content":{
+        "flavor":"cinnamon",
+        "color": "red"	
+    }
 }
 ```
 
