@@ -10,13 +10,6 @@ Features:
  - Content concurrency control using optimistic locking
  - Content version history
 
-
-Tech Stack:
- - MongoDB
- - Elasticsearch
- - Spring Boot
- 
-
 ## Topics
  
 * [Basic Setup](doc/OVERVIEW.md)
