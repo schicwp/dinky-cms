@@ -137,8 +137,17 @@ Example:
 }
 ```
 
+### Content Queries
 
-## Version History
+**TODO** more detail
+
+### Search Queries
+
+Search queries also return lists of content, but are backed by the elasticsearch indices.
+
+See the [search page](SEARCH.md) for more details. 
+
+### Version History
 
 Every modification to a piece of content is saved. 
 
@@ -149,13 +158,11 @@ These versions can be retrieved by using the endpoint:
 This will give a paginated list of all versions. The permissions for the 
 current version will determine access to the history. 
 
-## Permissions
+## Content Permissions
 
 Permissions control who can access or modify a document, or who can execute a certain workflow action.
 
-### Content Permissions
-
-TODO - update this
+**TODO** - more detail. 
  
 
 ## Binary Data (Images, Attachments)
@@ -168,6 +175,8 @@ This can then be uploaded via a Multipart submission (TODO, details)
     GET /api/v1/assets/{assetId}
     
 The binary asset will have the same permissions as the object that owns it. 
+
+**TODO** -more detail
 
 [Back](../)
 
