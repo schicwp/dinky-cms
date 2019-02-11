@@ -10,9 +10,9 @@ which is user defined and can allow some independence of from the working state 
 
 ## Adding and removing items from a search index
 
-Content is added to a specific search index by using the [AddToSearch](WORKFLOW.md#AddToSearch) action hook. 
+Content is added to a specific search index by using the [AddToSearch](WORKFLOW.md#addtosearch) action hook. 
 
-Items can be removed from an index using the [RemoveFromSearch](WORKFLOW.md#RemoveFromSearch) action hook.
+Items can be removed from an index using the [RemoveFromSearch](WORKFLOW.md#removefromsearch) action hook.
 
 
 ## Search API
@@ -31,7 +31,8 @@ syntax.
 The content api (**/api/v1/content**) is served by the mongoDB hosting content. This allows for simple searching, and 
 includes some indexing, but is best used when looking at content metadata fields (eg, the _state_, _type_, _owner_ etc).
 
-The search api is serviced by elasticsearch and can also search on metadata, but can 
+The search api is serviced by elasticsearch and can search on metadata, but can also do the full text searching
+of a robust search engine.
 
 ## Using _search_ to separate _working_ from _live_ content
 
