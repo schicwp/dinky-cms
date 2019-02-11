@@ -13,9 +13,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -36,6 +34,8 @@ public class WorkflowLoader {
     @Autowired
     WorkflowService workflowService;
 
+    private List<WorkflowConfig> workflowConfigs = new ArrayList<>();
+
 
     @PostConstruct
     public synchronized void init(){
@@ -44,6 +44,7 @@ public class WorkflowLoader {
         logger.info("Loading workflows");
 
         Map<String,Workflow> workflows = new HashMap<>();
+        List<WorkflowConfig> workflowConfigs = new ArrayList<>();
 
         Arrays.asList(new File(configDir).listFiles()).forEach(file->{
 
@@ -56,6 +57,7 @@ public class WorkflowLoader {
                 Workflow workflow = convertWorkflowConfigToWorkflow(workflowConfig);
 
                 workflows.put(workflow.getName(),workflow);
+                workflowConfigs.add(workflowConfig);
 
 
             }catch (Exception e){
@@ -67,6 +69,8 @@ public class WorkflowLoader {
         logger.info("Workflows: " + workflows);
 
         workflowService.setWorkflows(workflows);
+
+        setWorkflowConfigs(workflowConfigs);
     }
 
     public Workflow convertWorkflowConfigToWorkflow(WorkflowConfig workflowConfig){
@@ -101,5 +105,13 @@ public class WorkflowLoader {
                                 )
                             )
                     ).collect(Collectors.toList()));
+    }
+
+    public synchronized void setWorkflowConfigs(List<WorkflowConfig> workflowConfigs) {
+        this.workflowConfigs = workflowConfigs;
+    }
+
+    public synchronized List<WorkflowConfig> getWorkflowConfigs() {
+        return workflowConfigs;
     }
 }

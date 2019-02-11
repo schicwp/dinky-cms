@@ -1,9 +1,9 @@
 package org.schicwp.dinky.model.type;
 
+import org.schicwp.dinky.config.ContentTypeConfig;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by will.schick on 1/4/19.

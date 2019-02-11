@@ -28,6 +28,9 @@ public class TypeLoader {
 
     private static final Logger logger = Logger.getLogger(TypeLoader.class.getCanonicalName());
 
+
+    private List<ContentTypeConfig> contentTypeConfigs = new ArrayList<>();
+
     @Autowired
     ContentTypeService contentTypeService;
 
@@ -46,6 +49,7 @@ public class TypeLoader {
 
 
         Map<String,ContentType> contentTypes = new HashMap<>();
+        List<ContentTypeConfig> contentTypeConfigs = new ArrayList<>();
 
 
         Arrays.asList(new File(configDir).listFiles()).forEach( file->{
@@ -61,6 +65,8 @@ public class TypeLoader {
 
                 contentTypes.put(contentType.getName(), contentType);
 
+                contentTypeConfigs.add(contentTypeConfig);
+
 
             }catch (Exception e){
                 throw new RuntimeException("Error loading: " + file,e);
@@ -71,6 +77,7 @@ public class TypeLoader {
 
         logger.fine("Types: " + contentTypes);
         contentTypeService.setContentTypes(contentTypes);
+        setContentTypeConfigs(contentTypeConfigs);
 
 
 
@@ -104,5 +111,11 @@ public class TypeLoader {
         return contentType;
     }
 
+    public synchronized List<ContentTypeConfig> getContentTypeConfigs() {
+        return contentTypeConfigs;
+    }
 
+    public synchronized void setContentTypeConfigs(List<ContentTypeConfig> contentTypeConfigs) {
+        this.contentTypeConfigs = contentTypeConfigs;
+    }
 }
