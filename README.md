@@ -23,7 +23,7 @@ Tech Stack:
 * [Content Modeling](doc/CONTENT.md)
 * [Workflow Modeling](doc/WORKFLOW.md)
 * [Search](doc/SEARCH.md)
-* [Working With Content](CONTENT-API.md)
+* [Working With Content](doc/CONTENT-API.md)
 * [Extending](doc/EXTENDING.md)
 * [Javadocs](javadocs)
 
