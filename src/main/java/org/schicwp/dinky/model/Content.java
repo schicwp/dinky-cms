@@ -52,7 +52,9 @@ public class Content {
 
     public Content merge(Map<String,Object> properties){
 
-        this.content.putAll(properties);
+        if (properties != null)
+            this.content.putAll(properties);
+
         this.version++;
         this.modified = new Date();
 

@@ -32,7 +32,7 @@ public class Workflow{
 
         return actions
                 .stream()
-                .filter(a->a.getSourceStates().contains(state))
+                .filter(a->a.getSourceStates().contains(state) || a.getSourceStates().size() == 0)
                 .filter(a->a.getName().equalsIgnoreCase(action))
                 .findFirst();
     }

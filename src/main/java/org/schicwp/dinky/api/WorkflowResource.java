@@ -10,10 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Created by will.schick on 2/11/19.
@@ -34,5 +36,12 @@ public class WorkflowResource {
                 PageRequest.of(0,workflowConfigs.size()),
                 workflowConfigs::size
         );
+    }
+
+    @GetMapping("{name}")
+    public WorkflowConfig getContentType(@PathVariable("name") String name){
+        List<WorkflowConfig> workflowConfigs = workflowLoader.getWorkflowConfigs();
+
+        return workflowConfigs.stream().filter( w->w.getName().equals(name)).findFirst().orElseThrow(NoSuchElementException::new);
     }
 }

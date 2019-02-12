@@ -200,6 +200,10 @@ public class ContentResource {
         params.remove("size");
         params.remove("page");
 
+
+        if (q == null && params.size() == 0)
+            return null;
+
         Criteria criteria = new Criteria();
 
         for (String k:params.keySet()){
@@ -212,6 +216,7 @@ public class ContentResource {
             query = new BasicQuery(q).addCriteria(criteria);
         else
             query = Query.query(criteria);
+
         return query;
     }
 }

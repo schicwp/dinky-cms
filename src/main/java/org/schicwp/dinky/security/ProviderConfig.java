@@ -49,6 +49,10 @@ public class ProviderConfig extends WebSecurityConfigurerAdapter {
         JWTEncoder.setAuthenticationManager(authenticationManager());
         JWTEncoder.setSecret(key);
 
+        http
+                .cors().and()
+                .csrf()
+                .disable();
 
         http
                 .cors().and()

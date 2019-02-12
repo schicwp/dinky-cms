@@ -1,4 +1,5 @@
 name: JellyBean
+nameField: flavor
 workflows:
   - JellyBeanWorkflow
 fields:

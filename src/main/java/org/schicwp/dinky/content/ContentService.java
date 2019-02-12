@@ -127,9 +127,7 @@ public class ContentService {
 
     public Page<Content> find(Query query,Pageable pageable) {
 
-        Query finalQuery = query.addCriteria(
-                permissionService.getPermissionFilter()
-        ).with(pageable);
+        Query finalQuery = getPermissionAwareQuery(query, pageable);
 
 
         return  PageableExecutionUtils.getPage(
@@ -139,11 +137,17 @@ public class ContentService {
         );
     }
 
+    private Query getPermissionAwareQuery(Query query, Pageable pageable) {
+        Criteria permissionFilter = permissionService.getPermissionFilter();
+
+        return query == null?
+                Query.query(permissionFilter).with(pageable):
+                query.addCriteria(permissionFilter).with(pageable);
+    }
+
     public Page<Content> findAssigned(Query query,Pageable pageable) {
 
-        Query finalQuery = query.addCriteria(
-                getAssignedPermissionFilter()
-        ).with(pageable);
+        Query finalQuery = getPermissionAwareQuery(query,pageable);
 
 
         return  PageableExecutionUtils.getPage(
@@ -155,9 +159,7 @@ public class ContentService {
 
     public Page<Content> findMine(Query query,Pageable pageable) {
 
-        Query finalQuery = query.addCriteria(
-                getOwnedPermissionFilter()
-        ).with(pageable);
+        Query finalQuery = getPermissionAwareQuery(query,pageable);
 
 
         return  PageableExecutionUtils.getPage(
