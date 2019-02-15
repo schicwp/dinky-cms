@@ -13,10 +13,12 @@ import org.schicwp.dinky.content.ContentSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,13 +76,10 @@ public class ContentResource {
     @GetMapping("content/{id}/history")
     public Page<Content> getContentHistory(
             @PathVariable("id") String id,
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "page",defaultValue = "0") int page
+            @PageableDefault(sort = "modified", direction = Sort.Direction.DESC) Pageable pageable
     ){
         return  contentRepository.getHistory(id,
-                    PageRequest.of(page,size,
-                            Sort.by("content.modified").descending()
-                    )
+                    pageable
         );
     }
 
@@ -102,16 +101,13 @@ public class ContentResource {
 
     @GetMapping("content")
     public Page<Content> listContent(
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "page",defaultValue = "0") int page,
             @RequestParam(value = "q",required = false) String q,
-            @RequestParam Map<String,String> params
+            @RequestParam Map<String,String> params,
+            @PageableDefault(sort = "modified", direction = Sort.Direction.DESC) Pageable pageable
             ){
         return contentRepository.find(
                 generateQueryFromParams(q,params),
-                PageRequest.of(page,size,
-                    Sort.by("modified").descending()
-                )
+                pageable
         );
     }
 
@@ -119,16 +115,13 @@ public class ContentResource {
 
     @GetMapping("assigned")
     public Page<Content> assignedContent(
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "page",defaultValue = "0") int page,
             @RequestParam(value = "q",required = false) String q,
-            @RequestParam Map<String,String> params
+            @RequestParam Map<String,String> params,
+            @PageableDefault(sort = "modified", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return contentRepository.findAssigned(
                 generateQueryFromParams(q,params),
-                PageRequest.of(page,size,
-                        Sort.by("modified").descending()
-                )
+                pageable
         );
     }
 
@@ -136,16 +129,13 @@ public class ContentResource {
 
     @GetMapping("mine")
     public Page<Content> myCountent(
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "page",defaultValue = "0") int page,
             @RequestParam(value = "q",required = false) String q,
-            @RequestParam Map<String,String> params
+            @RequestParam Map<String,String> params,
+            @PageableDefault(sort = "modified", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return contentRepository.findMine(
                 generateQueryFromParams(q,params),
-                PageRequest.of(page,size,
-                        Sort.by("modified").descending()
-                )
+                pageable
         );
     }
 
@@ -196,9 +186,11 @@ public class ContentResource {
 
 
     private Query generateQueryFromParams(@RequestParam(value = "q", required = false) String q, @RequestParam Map<String, String> params) {
+
         params.remove("q");
         params.remove("size");
         params.remove("page");
+        params.remove("sort");
 
 
         if (q == null && params.size() == 0)

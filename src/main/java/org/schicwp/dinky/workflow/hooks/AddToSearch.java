@@ -2,7 +2,7 @@ package org.schicwp.dinky.workflow.hooks;
 
 import org.schicwp.dinky.model.Content;
 import org.schicwp.dinky.model.ContentMap;
-import org.schicwp.dinky.search.SearchRepository;
+import org.schicwp.dinky.search.SearchContent;
 import org.schicwp.dinky.search.SearchService;
 import org.schicwp.dinky.workflow.ActionHook;
 import org.schicwp.dinky.workflow.ActionHookFactory;
@@ -42,11 +42,7 @@ public class AddToSearch implements ActionHookFactory {
 
             content.getSearchVersions().put(index,content.getVersion());
 
-            searchService.withIndex(index,searchRepository -> {
-                searchRepository.save(content);
-            });
-
-
+            searchService.addToIndex(index,new SearchContent(content));
         };
     }
 }

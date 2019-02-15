@@ -2,7 +2,7 @@ package org.schicwp.dinky.workflow.hooks
 
 import org.schicwp.dinky.model.Content
 import org.schicwp.dinky.model.ContentMap
-import org.schicwp.dinky.search.SearchRepository
+import org.schicwp.dinky.search.SearchContent
 import org.schicwp.dinky.search.SearchService
 import org.schicwp.dinky.workflow.ActionHook
 import spock.lang.Specification
@@ -19,12 +19,10 @@ class AddToSearchSpec extends Specification{
 
     SearchService searchService;
 
-    SearchRepository searchRepository;
 
     void setup(){
 
         searchService = Mock(SearchService)
-        searchRepository = Mock(SearchRepository)
 
         addToSearch = new AddToSearch(
                 searchService: searchService
@@ -53,17 +51,9 @@ class AddToSearchSpec extends Specification{
 
         then:
         "the search services should be called to set index"
-        1 * searchService.withIndex("arf",_) >> { String index, Consumer<SearchRepository> c->
-            c.accept(searchRepository)
-        }
-
-        and:
-        "the content should be saved"
-        1 * searchRepository.save({Content c->
-            return c.searchVersions == [
-                    arf: 13
-            ]
-        })
+        1 * searchService.addToIndex("arf",{SearchContent c->
+            c.version == 13
+        }) >> "out"
     }
 
     void "it should use 'default' if no index specified"(){
@@ -82,16 +72,10 @@ class AddToSearchSpec extends Specification{
 
         then:
         "the search services should be called to set index"
-        1 * searchService.withIndex("default",_) >> { String index, Consumer<SearchRepository> c->
-            c.accept(searchRepository)
-        }
+        1 * searchService.addToIndex("default",{SearchContent c->
+            c.version == 13
+        }) >> "out"
 
-        and:
-        "the content should be saved"
-        1 * searchRepository.save({Content c->
-            return c.searchVersions == [
-                    default: 13
-            ]
-        })
+
     }
 }

@@ -2,6 +2,7 @@ package org.schicwp.dinky.content;
 
 import org.schicwp.dinky.api.dto.ContentSubmission;
 import org.schicwp.dinky.auth.AuthService;
+import org.schicwp.dinky.auth.User;
 import org.schicwp.dinky.exceptions.OptimisticLockingException;
 import org.schicwp.dinky.exceptions.PermissionException;
 import org.schicwp.dinky.exceptions.SubmissionValidationException;
@@ -62,6 +63,8 @@ public class ContentSubmissionService {
 
         boolean isNew;
 
+        User currentUser = authService.getCurrentUser();
+
         if (id != null) {
             Optional<Content> contentOptional = contentService
                     .findById(id);
@@ -74,7 +77,7 @@ public class ContentSubmissionService {
             oldContent = contentOptional.orElse(
                     new Content(
                             id,
-                            authService.getCurrentUser().getUsername(),
+                            currentUser.getUsername(),
                             contentSubmission.getType())
             );
 
@@ -85,7 +88,7 @@ public class ContentSubmissionService {
 
             oldContent = new Content(
                     UUID.randomUUID().toString(),
-                    authService.getCurrentUser().getUsername(),
+                    currentUser.getUsername(),
                     contentSubmission.getType()
             );
         }
@@ -95,7 +98,9 @@ public class ContentSubmissionService {
             throw new OptimisticLockingException();
         }
 
+
         Content content = oldContent.merge(contentSubmission.getContent());
+        content.setModifiedBy(currentUser.getUsername());
 
         if (contentType.getNameField() != null){
             content.setName((String)content.getContent().get(contentType.getNameField()));
@@ -109,6 +114,7 @@ public class ContentSubmissionService {
             throw new FieldValidationException(validate);
 
         contentType.convert(content);
+
 
 
         if (contentSubmission.getAction() != null)

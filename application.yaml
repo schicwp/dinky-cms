@@ -5,3 +5,12 @@ auth:
     af-specification-editor: Editor
   allUsers:
    - test
+
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            core: DEBUG

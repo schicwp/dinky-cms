@@ -2,7 +2,6 @@ package org.schicwp.dinky.workflow.hooks
 
 import org.schicwp.dinky.model.Content
 import org.schicwp.dinky.model.ContentMap
-import org.schicwp.dinky.search.SearchRepository
 import org.schicwp.dinky.search.SearchService
 import org.schicwp.dinky.workflow.ActionHook
 import spock.lang.Specification
@@ -19,12 +18,10 @@ class RemoveFromSearchSpec extends Specification{
 
     SearchService searchService;
 
-    SearchRepository searchRepository;
 
     void setup(){
 
         searchService = Mock(SearchService)
-        searchRepository = Mock(SearchRepository)
 
         removeFromSearch = new RemoveFromSearch(
                 searchService: searchService
@@ -63,17 +60,8 @@ class RemoveFromSearchSpec extends Specification{
 
         then:
         "the search services should be called to set index"
-        1 * searchService.withIndex("arf",_) >> { String index, Consumer<SearchRepository> c->
-            c.accept(searchRepository)
-        }
+        1 * searchService.deleteFromIndex("arf","123455")
 
-        and:
-        "the content should be found"
-        1 * searchRepository.findById("123455") >> Optional.of(indexed)
-
-        and:
-        "the content should be deleted"
-        1 * searchRepository.delete(indexed)
 
         and:
         "the search version should be removed"
@@ -106,17 +94,7 @@ class RemoveFromSearchSpec extends Specification{
 
         then:
         "the search services should be called to set index"
-        1 * searchService.withIndex("default",_) >> { String index, Consumer<SearchRepository> c->
-            c.accept(searchRepository)
-        }
-
-        and:
-        "the content should be found"
-        1 * searchRepository.findById("123455") >> Optional.of(indexed)
-
-        and:
-        "the content should be deleted"
-        1 * searchRepository.delete(indexed)
+        1 * searchService.deleteFromIndex("default","123455")
 
         and:
         "the search version should be removed"

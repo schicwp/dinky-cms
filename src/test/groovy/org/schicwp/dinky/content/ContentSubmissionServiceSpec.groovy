@@ -225,6 +225,10 @@ class ContentSubmissionServiceSpec extends Specification {
         1 * content.merge(contentMap) >> content
 
         and:
+        "modification should be recorded"
+        1 * content.setModifiedBy("bob")
+
+        and:
         "the content should be sanitized"
         1 * contentType.sanitize(content) >> content
 
@@ -309,6 +313,10 @@ class ContentSubmissionServiceSpec extends Specification {
         and:
         "the new content should be merged"
         1 * content.merge(contentMap) >> content
+
+        and:
+        "modification should be recorded"
+        1 * content.setModifiedBy("bob")
 
         and:
         "the content should be sanitized"
@@ -400,6 +408,10 @@ class ContentSubmissionServiceSpec extends Specification {
         and:
         "the new content should be merged"
         1 * content.merge(contentMap) >> content
+
+        and:
+        "modification should be recorded"
+        1 * content.setModifiedBy("bob")
 
         and:
         "the content should be sanitized"

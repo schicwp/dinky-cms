@@ -2,8 +2,6 @@ package org.schicwp.dinky.workflow.hooks
 
 import org.schicwp.dinky.model.Content
 import org.schicwp.dinky.model.ContentMap
-import org.schicwp.dinky.search.SearchRepository
-import org.schicwp.dinky.search.SearchService
 import org.schicwp.dinky.workflow.ActionHook
 import spock.lang.Specification
 import spock.lang.Unroll

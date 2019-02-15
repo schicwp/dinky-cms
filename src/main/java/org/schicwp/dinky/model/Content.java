@@ -1,7 +1,10 @@
 package org.schicwp.dinky.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -10,8 +13,7 @@ import java.util.Map;
 /**
  * Created by will.schick on 1/4/19.
  */
-@org.springframework.data.mongodb.core.mapping.Document
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "#{searchService.currentIndex()}", type = "contentType")
+@Document
 public class Content {
 
     @Indexed
@@ -32,6 +34,10 @@ public class Content {
     @Indexed
     private String owner;
     @Indexed
+    private String createdBy;
+    @Indexed
+    private String modifiedBy;
+    @Indexed
     private String assignedUser;
     @Indexed
     private String assignedGroup;
@@ -47,7 +53,28 @@ public class Content {
     public Content(String id, String owner, String type){
         this.id = id;
         this.owner = owner;
+        this.createdBy = owner;
+        this.modifiedBy = owner;
         this.type = type;
+    }
+
+    public Content(Content content){
+        this.id = content.id;
+        this.version = content.version;
+        this.created = content.created;
+        this.modified = content.modified;
+        this.workflow = content.workflow;
+        this.state = content.state;
+        this.type = content.type;
+        this.owner = content.owner;
+        this.createdBy = content.createdBy;
+        this.modifiedBy = content.modifiedBy;
+        this.assignedUser = content.assignedUser;
+        this.assignedGroup = content.assignedGroup;
+        this.name = content.name;
+        this.searchVersions = content.searchVersions;
+        this.permissions = content.permissions;
+        this.content = content.content;
     }
 
     public Content merge(Map<String,Object> properties){
@@ -124,6 +151,10 @@ public class Content {
     }
 
     public String getName() {
+        if (name == null){
+            return this.id;
+        }
+
         return name;
     }
 
@@ -173,6 +204,22 @@ public class Content {
 
     public void setWorkflow(String workflow) {
         this.workflow = workflow;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Override
