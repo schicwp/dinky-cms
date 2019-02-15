@@ -13,9 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 
 /**
  * Created by will.schick on 1/6/19.
@@ -86,6 +89,11 @@ public class SearchResource {
 
         });
 
+    }
+
+    @GetMapping
+    public Collection<String> getIndexes(){
+        return searchService.getIndexes();
     }
 
 

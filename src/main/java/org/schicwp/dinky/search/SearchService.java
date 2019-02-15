@@ -1,5 +1,9 @@
 package org.schicwp.dinky.search;
 
+import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.schicwp.dinky.content.PermissionService;
 import org.schicwp.dinky.model.Content;
@@ -8,8 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -23,6 +30,9 @@ public class SearchService {
 
     @Autowired
     SearchRepository searchRepository;
+
+    @Autowired
+    ElasticsearchTemplate elasticsearchTemplate;
 
     private final ThreadLocal<String> currentIndex = new ThreadLocal<>();
 
@@ -56,6 +66,20 @@ public class SearchService {
             name = "default";
 
         return name;
+    }
+
+
+    public Collection<String> getIndexes(){
+        Collection<String> result = new ArrayList<>();
+
+        GetSettingsResponse response = elasticsearchTemplate.getClient().admin().indices().prepareGetSettings().get();
+
+        for (ObjectObjectCursor<String, Settings> cursor : response.getIndexToSettings()) {
+            String index = cursor.key;
+            result.add(index);
+        }
+
+        return result;
     }
 
 }
