@@ -84,7 +84,7 @@ public class MyHookFactory implements ActionHookFactory {
 bean                        | description                               | notes
 ---                         | ---                                       | ----
 ContentService              | allows querying of the content database   | should not be used to write content, otherwise, validation and workflow will be ignored. Use **ContentSubmissionService** to write content
-ContentSubmissionService    | allows submission og content              |
+ContentSubmissionService    | allows submission of content              |
 SearchService               | gives access to search indexes            | see [search](SEARCH.md) for more info on search
 AuthService                 | gives access to current auth context      |
 
@@ -103,7 +103,7 @@ async workflow actions which don't have a security context associated with them.
 
     public void myBusiness(){
 
-        Objcet thing = authService.withSystemUser(()->{
+        Object thing = authService.withSystemUser(()->{
           
 	        return contentService.find(...);
 
