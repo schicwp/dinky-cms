@@ -129,7 +129,7 @@ A reference to another content object, by id.
 | referencedType (optional)             | the type of object referenced. If not there, any type of object can be referenced     |
 
 
-### Adding field tyoes
+### Adding field types
 
 See the [Extending](EXTENDING.md) for information on custom field types.
 
