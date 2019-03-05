@@ -28,11 +28,6 @@ public class ProviderConfig extends WebSecurityConfigurerAdapter {
 
     private static final Logger logger = Logger.getLogger(ProviderConfig.class.getCanonicalName());
 
-    @Value("${ad.domain}")
-    private String AD_DOMAIN;
-
-    @Value("${ad.url}")
-    private String AD_URL;
 
     @Value("${dinky.security.key}")
     private String key;
@@ -74,7 +69,7 @@ public class ProviderConfig extends WebSecurityConfigurerAdapter {
         authManagerBuilder.inMemoryAuthentication().withUser(new User(
                 "joe",
                 passwordEncoder().encode("bob"),
-                Arrays.asList(new SimpleGrantedAuthority("ARF"))
+                Arrays.asList(new SimpleGrantedAuthority("dev"))
         ));
 
     }
