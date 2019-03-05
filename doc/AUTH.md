@@ -42,7 +42,7 @@ This requires a valid token.
 
 One or many authentication providers can be used via various [Spring Sercurity](https://spring.io/projects/spring-security) modules. At a minimum, these provides need to supply a unique username and user roles/groups. 
 
-An example/development security config is [here](src/main/java/org/schicwp/dinky/security/ProviderConfig.java). This is excluded from the binary builds but can serve as a template for other security configurations. 
+An example/development security config is [here](../src/main/java/org/schicwp/dinky/security/ProviderConfig.java). This is excluded from the binary builds but can serve as a template for other security configurations. 
 
 
 
