@@ -18,9 +18,11 @@ Post body:
 
 The service will respond with a token:
 
+```json
 {
   "token":"1234567890"
 }
+```
 
 The token should then be used as a [Bearer Token](https://tools.ietf.org/html/rfc6750) in the http request headers:
 
