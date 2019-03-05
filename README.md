@@ -17,6 +17,7 @@ Features:
 * [Workflow Modeling](doc/WORKFLOW.md)
 * [Search](doc/SEARCH.md)
 * [Working With Content](doc/CONTENT-API.md)
+* [Auth](docs/AUTH.md)
 * [Extending](doc/EXTENDING.md)
 * [Javadocs](javadocs)
 
