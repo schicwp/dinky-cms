@@ -19,7 +19,7 @@ Features:
 * [Working With Content](doc/CONTENT-API.md)
 * [Auth](doc/AUTH.md)
 * [Extending](doc/EXTENDING.md)
-* [Javadocs](javadocs)
+* [Javadocs](javadocs/)
 
 ## Admin Console
 
