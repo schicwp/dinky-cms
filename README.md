@@ -1,5 +1,7 @@
 # Dinky CMS
 
+[![Build Status](https://travis-ci.org/schicwp/dinky-cms.svg?branch=master)](https://travis-ci.org/schicwp/dinky-cms)
+
 This is a small, web based content repository service.
 
 Features:
