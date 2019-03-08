@@ -24,4 +24,3 @@ Features:
 ## Admin Console
 
 An admin console is available [here](https://schicwp.github.io/dinky-admin/)
-
