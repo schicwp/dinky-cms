@@ -62,9 +62,12 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-signing {
-    sign configurations.archives
+if (System.getenv('sign') != "false"){
+    signing {
+        sign configurations.archives
+    }
 }
+
 
 
 uploadArchives {
