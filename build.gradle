@@ -1,6 +1,9 @@
 group 'org.schicwp.dinky'
 version "0.1.1"
 
+def ossrhUsername = hasProperty('ossrhUsername') ? ossrhUsername : System.getenv('ossrhUsername')
+def ossrhPassword = hasProperty('ossrhPassword') ? ossrhPassword : System.getenv('ossrhPassword')
+
 buildscript {
     repositories {
         mavenCentral()
