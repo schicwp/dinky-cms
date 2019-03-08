@@ -6,10 +6,12 @@ import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.*;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
@@ -56,6 +58,12 @@ public class SearchService {
 
     public String deleteFromIndex(String index, String id){
         return elasticsearchTemplate.delete(index,ES_TYPENAME,id);
+    }
+
+    //searchService.search(index,QueryBuilders.queryStringQuery(q),pageable )
+
+    public Page<SearchContent> search(String index, String query,int page, int size){
+        return search(index, QueryBuilders.queryStringQuery(query), PageRequest.of(page,size));
     }
 
     public Page<SearchContent> search(String index, QueryBuilder queryBuilder, Pageable pageable){

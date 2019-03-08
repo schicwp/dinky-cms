@@ -56,6 +56,8 @@ dependencies {
     compile("com.unboundid:unboundid-ldapsdk")
     compile("org.springframework.ldap:spring-ldap-core")
 
+    compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+
 
     // https://mvnrepository.com/artifact/com.auth0/java-jwt
     compile group: 'com.auth0', name: 'java-jwt', version: '3.5.0'

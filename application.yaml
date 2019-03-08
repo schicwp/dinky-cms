@@ -7,7 +7,7 @@ auth:
    - test
 
 
-logging:
+#logging:
   level:
     org:
       springframework:

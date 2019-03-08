@@ -1,5 +1,7 @@
 package org.schicwp.dinky;
 
+import nz.net.ultraq.thymeleaf.LayoutDialect;
+import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -11,6 +13,8 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templateresolver.FileTemplateResolver;
 
 import java.util.Arrays;
 
@@ -40,6 +44,22 @@ public class Main {
                 System.out.println(beanName);
             }
         };
+    }
+    @Bean
+    FileTemplateResolver templateResolver(){
+        FileTemplateResolver fileTemplateResolver = new FileTemplateResolver();
+        fileTemplateResolver.setCacheable(false);
+        fileTemplateResolver.setPrefix("./web/");
+        fileTemplateResolver.setSuffix(".html");
+        return fileTemplateResolver;
+    }
+
+    @Bean
+    SpringTemplateEngine templateEngine(){
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.addDialect(new LayoutDialect(new GroupingStrategy()));
+        templateEngine.setTemplateResolver(templateResolver());
+        return templateEngine;
     }
 
 }
