@@ -1,5 +1,5 @@
-group 'org.schicwp'
-version "0.1.${System.env.BUILD_NUMBER?:'0-SNAPSHOT'}"
+group 'org.schicwp.dinky'
+version "0.1.1"
 
 buildscript {
     repositories {
@@ -15,6 +15,9 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
 
 sourceCompatibility = 1.8
 
@@ -41,6 +44,71 @@ bootJar {
 javadoc {
     destinationDir = new File("javadocs")
 }
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Dinky CMS'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'A Spring Boot Content Service.'
+                url 'http://dinky.schicwp.org/'
+
+                scm {
+                    connection 'scm:git:https://github.com/schicwp/dinky-cms.git'
+                    developerConnection 'scm:git:https://github.com/schicwp/dinky-cms.git'
+                    url 'https://github.com/schicwp/dinky-cms'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'schicwp'
+                        name 'William Schick'
+                        email 'schicwp@users.noreply.github.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 dependencies {
 
